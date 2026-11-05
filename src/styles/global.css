@@ -330,11 +330,41 @@ h3 {
 }
 .item-image {
   display: block;
+  background: #f3f4f6;
   object-fit: contain;
   width: 86px;
   height: 48px;
   flex-shrink: 0;
   border-radius: 4px;
+}
+.item-image[data-rarity] {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--rarity-color) 16%, white),
+    color-mix(in srgb, var(--rarity-color) 55%, white)
+  );
+  border: 1px solid color-mix(in srgb, var(--rarity-color) 45%, white);
+  border-bottom: 3px solid var(--rarity-color);
+  padding: 4px;
+}
+/* 色相取自 DMZHub 的具名物品稀有度标记；浅色混合适配本站白底界面。 */
+.item-image[data-rarity="common"] {
+  --rarity-color: #98989a;
+}
+.item-image[data-rarity="uncommon"] {
+  --rarity-color: #87b951;
+}
+.item-image[data-rarity="rare"] {
+  --rarity-color: #4190c8;
+}
+.item-image[data-rarity="epic"] {
+  --rarity-color: #9e94f6;
+}
+.item-image[data-rarity="legendary"] {
+  --rarity-color: #f89442;
+}
+.item-image[data-rarity="ultra"] {
+  --rarity-color: #fc4f32;
 }
 .item-image.is-resource {
   background: #515967;

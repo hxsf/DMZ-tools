@@ -2,6 +2,15 @@ import { unlockEn } from "./unlock";
 
 export default {
   unlock: unlockEn,
+  rarity: {
+    common: "Common",
+    uncommon: "Uncommon",
+    rare: "Rare",
+    epic: "Epic",
+    legendary: "Legendary",
+    ultra: "Ultra",
+    label: "Rarity: {{rarity}}",
+  },
   app: {
     name: "DMZ TOOLS",
     skip: "Skip to content",

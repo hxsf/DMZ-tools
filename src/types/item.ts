@@ -1,7 +1,9 @@
-import type { SourceId } from "./source";
+import type { Fact, SourceId } from "./source";
 
 /** 项目内稳定 ID，不使用中文名或声称是官方 ID。 */
 export type ItemId = `item:${string}`;
+
+export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "ultra";
 
 export type WeaponCategory =
   | "assault-rifle"
@@ -26,6 +28,8 @@ interface ItemBase {
   readonly id: ItemId;
   readonly name: ItemName;
   readonly sourceIds: readonly [SourceId, ...SourceId[]];
+  /** 缺省表示未收集；武器本体与对应手册的稀有度分别记录。 */
+  readonly rarity?: Fact<ItemRarity>;
   /** 可选，缺省表示尚未收集。 */
   readonly icon?: string;
 }

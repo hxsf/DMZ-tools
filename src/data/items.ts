@@ -1,7 +1,8 @@
 import type { Item } from "../types/item";
 import { weaponManualEntries } from "./weapons";
+import { itemRarities } from "./rarities";
 
-export const items = [
+const definitions = [
   {
     id: "item:synthetics",
     kind: "resource",
@@ -1447,3 +1448,8 @@ export const items = [
       }) satisfies Item,
   ),
 ] as const satisfies readonly Item[];
+
+export const items: readonly Item[] = definitions.map((item): Item => {
+  const rarity = itemRarities[item.id];
+  return rarity ? { ...item, rarity } : item;
+});

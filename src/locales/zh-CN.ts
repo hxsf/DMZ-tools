@@ -2,6 +2,15 @@ import { unlockZh } from "./unlock";
 
 export default {
   unlock: unlockZh,
+  rarity: {
+    common: "普通",
+    uncommon: "精制",
+    rare: "稀有",
+    epic: "史诗",
+    legendary: "传奇",
+    ultra: "终极",
+    label: "稀有度：{{rarity}}",
+  },
   app: {
     name: "DMZ TOOLS",
     skip: "跳到内容",

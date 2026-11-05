@@ -8,7 +8,7 @@ import { sources } from "./sources";
 export const catalog = {
   schemaVersion: 1,
   game: "mw4-dmz",
-  dataVersion: "2026-11-05.expanded.1",
+  dataVersion: "2026-11-05.rarity.1",
   collectedOn: "2026-11-05",
   coverage: "sample",
   sources,

@@ -82,6 +82,25 @@ test("配方及其所有冲突版本的材料引用、数量和能力引用完�
   });
 });
 
+test("稀有度覆盖已收集的107项物品，不把缺失或手册品质默认成武器品质", () => {
+  const rarities = new Set(["common", "uncommon", "rare", "epic", "legendary", "ultra"]);
+  const known = catalog.items.filter((item) => item.rarity);
+  assert.equal(known.length, 107);
+  for (const item of known) {
+    assert.ok(item.kind === "ingredient" || item.kind === "equipment");
+    claims(item.rarity).forEach((claim) => assert.ok(rarities.has(claim.value)));
+  }
+  for (const recipe of catalog.recipes) {
+    assert.equal(items.get(recipe.output.itemId).rarity?.status, "reported");
+  }
+  assert.equal(items.get("item:bandage").rarity.value, "uncommon");
+  assert.equal(items.get("item:medkit").rarity.value, "epic");
+  assert.equal(items.get("item:tempered-armor-vest").rarity.value, "ultra");
+  assert.equal(items.get("item:m4").rarity, undefined);
+  assert.equal(items.get("item:manual-m4").rarity, undefined);
+  assert.equal(items.get("item:synthetics").rarity, undefined);
+});
+
 test("手册指向真实武器，手册定义与解锁规则一一对应", () => {
   const manuals = catalog.items.filter((item) => item.kind === "weapon-manual");
   // 本批查阅的手册目录明确列出 32 项，不能退回仅三项的类型样例。
