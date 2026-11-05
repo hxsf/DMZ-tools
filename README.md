@@ -31,15 +31,11 @@ Vite 使用 Rolldown 打包、Oxc 转换与压缩；Preact 提供界面。类型
 
 ## GitHub Pages 部署
 
-[Pages 工作流](.github/workflows/pages.yml) 在推送 `main` 或从 `main` 手动运行时，检查、构建并把 `dist/` 发布到同仓库的 `pages` 分支。`pages` 是与源码没有共同历史的孤立分支；每次只保留最新构建提交，不合并回源码分支。
+[Pages 工作流](.github/workflows/pages.yml) 在推送 `main` 或从 `main` 手动运行时直接部署到 GitHub Pages。`build` 任务检查并构建 `dist/`，通过 `actions/upload-pages-artifact` 上传；`deploy` 任务使用 `actions/deploy-pages` 发布到 `github-pages` 环境。无需维护 `pages` 分支。
 
-首次配置：
+在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**，然后运行工作流；之后推送 `main` 即可自动更新。仓库设置由用户操作，工作流不自动修改。
 
-1. 将代码和工作流推送到 `main`，等 `Publish Pages branch` 完成，自动创建 `pages` 分支。
-2. 在仓库 **Settings → Pages** 选择 **Deploy from a branch → pages → /(root)** 并保存。
-3. 再运行一次工作流；之后推送 `main` 即可自动更新。
-
-工作流使用内置 `GITHUB_TOKEN` 的 `contents: write` 和 `pages: write` 权限，不需要额外 PAT。它发布分支后会显式请求 Pages 构建，避免仅推送分支却未更新站点；首次尚未启用 Pages 时只生成分支并提示配置，不修改仓库设置。`pages` 是自动生成分支，不应手动维护或限制此工作流的强制推送。
+工作流使用内置 `GITHUB_TOKEN`，无需额外 PAT。构建任务仅需 `contents: read`；部署任务使用 `pages: write` 和 `id-token: write`，通过 OIDC 验证部署身份。
 
 默认站点地址为 <https://hxsf.github.io/DMZ-tools/>。本地验证部署产物：
 
@@ -50,7 +46,7 @@ npm run preview -- --base=/DMZ-tools/
 
 构建使用 `/DMZ-tools/` 作为资源和路由前缀，为四个工具生成独立的静态入口，直接访问或刷新子页面也能打开。产物包含 `.nojekyll`、`404.html`、项目许可与游戏图片版权声明，不包含源码、开发文档或个人存档。普通 `npm run dev` / `npm run build` 保持根路径。
 
-GitHub 规则参考：[分支发布与自动构建](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)、[请求 Pages 构建 API](https://docs.github.com/en/rest/pages/pages#request-a-github-pages-build)。
+GitHub 规则参考：[使用自定义 Actions 工作流发布 Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow)。
 
 ## 目录结构
 
