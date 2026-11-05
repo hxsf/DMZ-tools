@@ -1,0 +1,33 @@
+{
+  "name": "dmz-tools",
+  "version": "0.0.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsrs --noEmit --fast",
+    "lint": "TSRS_FAST=1 OXLINT_TSGOLINT_PATH=./node_modules/.bin/tsrs-lint oxlint --type-aware --deny-warnings src vite.config.ts",
+    "format": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore --write .",
+    "format:check": "oxfmt --ignore-path .gitignore --ignore-path .oxfmtignore --check .",
+    "test": "node scripts/test.mjs"
+  },
+  "dependencies": {
+    "@preact/signals": "2.11.4",
+    "preact": "11.1.1",
+    "preact-iso": "2.12.2",
+    "ts-results-es": "7.1.0"
+  },
+  "devDependencies": {
+    "@prefresh/vite": "4.0.1",
+    "oxfmt": "0.76.0",
+    "oxlint": "1.91.0",
+    "tsrs": "0.21.0-ts7.1.0-beta",
+    "vite": "8.3.5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

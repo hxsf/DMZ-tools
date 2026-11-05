@@ -1,0 +1,60 @@
+# 项目约定
+
+本文件记录已经确认的技术与产品决策。依赖版本以 `package.json` 和锁文件为准，目录与数据设计细节见 `docs/development/`。
+
+## 产品范围
+
+- 项目是 DMZ 工具集合：打印配方与武器手册解锁跟踪、3D 打印需求计算器、需求跟踪器。首版不包含武器外观蓝图。
+- 解锁由用户手动标记。获取条件仅作可选参考，缺少条件不妨碍收录或勾选，不按等级自动推断已解锁。
+- 游戏资料、用户记录和派生计算分离。更新名称或资料不改变稳定 ID，也不改写用户进度。
+- 界面面向中文用户，同时兼顾 PC 与移动端、键盘与触控操作。具体视觉方案尚未确认。
+
+## 技术与目录
+
+- 使用 Preact、TypeScript / TSX、Vite；`preact-iso` 管理路由和页面懒加载，`@preact/signals` 管理共享状态。
+- 沿用 Vite 的 Oxc 转换与压缩、Rolldown 打包，以及 `@prefresh/vite` 配置。类型检查用 tsrs，检查与格式化用 Oxlint / Oxfmt，不另加 Babel、esbuild 或替代类型检查链路。
+- 源码按技术职责组织，目录内先平铺文件：`views/` 放页面入口，`components/` 放组件，`types/` 放类型，`stores/` 放状态与操作，`data/` 放资料。
+- 不增加 `domain/`、`features/` 等抽象层级，也不为每个具体工具建立一套目录。尚未使用的模块不预建空目录。
+- `main.tsx` 负责挂载，`App.tsx` 负责布局，`router.tsx` 负责路由；`storage.ts` 负责存档校验和加载保存，`kv.ts` 提供存储适配器。
+- 类型独立于 Preact 与 Signals；静态资料使用 `satisfies` 检查。公共 store 由工厂创建，组件临时状态留在组件内。
+
+## 国际化
+
+- 已确认采用 `i18next` + `react-i18next`，通过 `preact/compat` 接入；这两项依赖目前尚未安装、初始化或接入界面。
+- JSX 中的可见文案统一使用 `<Trans>`，普通文本与富文本均适用。`placeholder`、`title`、`aria-label` 等属性及其他需要字符串的场景使用 `t()`。
+- `<Trans>` 本身不订阅语言变化；组件通过 `useTranslation()` 获取翻译函数并订阅更新，必要时将 `t` 传给 `<Trans>`。
+- 默认语言为 `zh-CN`，预留 `en`。按完整句子翻译，插值使用参数，不拼接零散译文；数字和日期使用 `Intl`。
+- 游戏名称放在资料中，界面文案放在翻译资源中。名称保留英文、中文来源和搜索别名，中文缺失时回退英文；官方博客用名不等于已核对客户端。
+
+## Result、Option 与存储
+
+- 统一使用已有的 `ts-results-es` 提供 `Result<T, E>` 与 `Option<T>`，配合标准 `async/await`。新增运行时缺失值优先表达为 Option，尽量少用 `null`。
+- `AsyncKV.get` 返回 `Promise<Result<Option<string>, KVError>>`；`set` 与 `delete` 返回 `Promise<Result<void, KVError>>`。
+- `Ok(Some(value))` 表示存在，`Ok(None)` 表示键不存在，`Err(error)` 表示访问失败。`Some("")` 是有效存在的空字符串，不能当成 None；删除不存在的键视为成功。
+- 外部 API 的同步异常和异步失败在适配器边界转换为 Err，不用异常或 Promise rejection 表达 KV 访问失败。错误保留操作、键与原始 `cause`，界面按错误码翻译。
+- 调用方使用 `map`、`mapErr`、`andThen`、`mapOr` 或显式分支组合结果，不用 `unwrap()` 将可处理错误重新变成异常。
+- 当前浏览器适配器使用 localStorage，并在实际操作时才访问它。其底层仍是同步 API；后续远端实现替换 AsyncKV，业务层不直接访问浏览器或网络存储。
+- 保留版本 1 存档、`dmz-tools:user` 键及现有 JSON 格式；Option、Result、Signals 和派生值不写入存档。现有 JSON 中的 `null` 不做无迁移的批量替换。
+- 加载时区分有效、缺失、损坏、不支持版本和访问失败。失败不能用默认空存档覆盖；校验失败不触发写入。
+- 保存显式调用并 `await` 完成，连续保存应串行执行。只有底层成功完成写入才能报告成功；读取存档、创建 store 或导入模块不触发自动保存。
+
+## 资料与版权
+
+- 游戏事实保留来源；未知和冲突显式表达，不把缺失成本当成零、缺失产量当成一，也不把来源记载当成当前版本游戏实测。
+- 第三方图片等资源放在 `src/assets/third-party/`，通过显式引用交给 Vite 处理；来源目录保存署名和许可信息。
+- 外部参考文档放在 `docs/external/`，只用于开发查阅，不导入应用、不放进 `public/`、不复制到构建产物。
+- 第三方资源和外部文档版权及许可归原权利人，不继承项目 GPL 许可证。项目自写代码、说明和模板遵循项目许可证；细节见 `THIRD_PARTY_NOTICES.md`。
+
+## 检查
+
+按改动运行相关检查。类型与行为变更应验证相应边界；测试复用现有 Node / Vite 流程。
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm test
+npm run build
+```
+
+`npm run build` 已包含类型检查。格式化使用项目脚本以保留忽略规则，避免改写第三方文件和外部文档。

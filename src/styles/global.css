@@ -1,0 +1,126 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #edf1ec;
+  background: #151b18;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible {
+  outline: 2px solid #b9d88c;
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 1;
+  padding: 0.5rem 1rem;
+  color: #151b18;
+  background: #b9d88c;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 3rem;
+  padding: 1rem max(1rem, calc((100vw - 72rem) / 2));
+  border-bottom: 1px solid #354037;
+}
+
+.app-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.app-navigation a {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  color: #bec8bf;
+  text-decoration: none;
+}
+
+.app-navigation a:hover {
+  color: #edf1ec;
+  background: #252f28;
+}
+
+.app-navigation a[aria-current="page"] {
+  color: #d6edb3;
+  background: #2d3b28;
+}
+
+.app-content {
+  width: min(100%, 74rem);
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: #b9d88c;
+  font-size: 0.875rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.3;
+}
+
+.page-description {
+  max-width: 48rem;
+  margin: 1rem 0 2rem;
+  color: #bec8bf;
+}
+
+.empty-state {
+  max-width: 48rem;
+  padding: 1.5rem;
+  border: 1px solid #354037;
+  border-radius: 0.5rem;
+  background: #1b231e;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #bec8bf;
+}
+
+.text-link {
+  color: #b9d88c;
+}
