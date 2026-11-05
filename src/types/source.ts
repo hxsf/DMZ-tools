@@ -4,7 +4,7 @@ export interface DataSource {
   readonly id: SourceId;
   readonly title: string;
   readonly url: string;
-  readonly kind: "official" | "community";
+  readonly kind: "official" | "community" | "in-game";
   readonly accessedOn: string;
   readonly publishedOn: string | null;
   readonly updatedOn: string | null;

@@ -16,7 +16,7 @@ export type WeaponCategory =
 export interface ItemName {
   readonly en: string;
   readonly zhCN?: string;
-  /** official 表示官方发表的用名；不等于已核对当前客户端。出处见物品 sourceIds。 */
+  /** official 表示官方文章或客户端用名；具体证据与版本见物品 sourceIds。 */
   readonly zhCNOrigin?: "official" | "community" | "project";
   /** 用于多语检索，可能包含官网异名、社区译名或项目说明名。 */
   readonly aliases?: readonly string[];

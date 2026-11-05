@@ -2,6 +2,36 @@ import type { DataSource } from "../types/source";
 
 export const sources = [
   {
+    id: "source:hub-printer-catalog",
+    title: "DMZHub — 3D Printer recipe catalog",
+    url: "https://dmzhub.gg/3d-printer",
+    kind: "community",
+    accessedOn: "2026-11-05",
+    publishedOn: null,
+    updatedOn: null,
+    gameVersion: "MW4 DMZ Season 0（来源未注明补丁版本）",
+  },
+  {
+    id: "source:hub-printer-catalog-zh",
+    title: "DMZHub — 3D 打印机配方目录（简体中文）",
+    url: "https://dmzhub.gg/zh/3d-printer",
+    kind: "community",
+    accessedOn: "2026-11-05",
+    publishedOn: null,
+    updatedOn: null,
+    gameVersion: "MW4 DMZ Season 0（来源未注明补丁版本）",
+  },
+  {
+    id: "source:user-weapon-screenshots",
+    title: "用户提供的中文客户端购买新武器截图：32 项名称与分类核对",
+    url: "https://github.com/hxsf/DMZ-tools/blob/main/docs/development/weapon-name-verification.md",
+    kind: "in-game",
+    accessedOn: "2026-11-05",
+    publishedOn: null,
+    updatedOn: null,
+    gameVersion: "用户提供的中文客户端截图，未显示客户端构建号",
+  },
+  {
     id: "source:official-weapons-zh",
     title: "Call of Duty：首发武器、装备与创建作战配置（简体中文）",
     url: "https://www.callofduty.com/cn/zh/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class",

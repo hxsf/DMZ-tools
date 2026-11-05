@@ -7,14 +7,7 @@ import type { Item } from "../types/item";
 
 function recipeGroup(item: Item): UnlockGroup {
   if (item.kind === "ingredient") return "ingredient";
-  if (item.kind === "equipment") {
-    if (
-      item.category === "consumable" ||
-      item.category === "backpack" ||
-      item.category === "field-upgrade"
-    )
-      return item.category;
-  }
+  if (item.kind === "equipment") return item.category;
   return "other";
 }
 

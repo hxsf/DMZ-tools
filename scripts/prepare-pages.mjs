@@ -1,4 +1,4 @@
-import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,7 +20,11 @@ for (const name of ["LICENSE", "THIRD_PARTY_NOTICES.md"]) {
   await copyFile(join(root, name), join(dist, name));
 }
 await mkdir(join(dist, "third-party"), { recursive: true });
-await copyFile(
-  join(root, "src/assets/third-party/items/dmzhub/ATTRIBUTION.md"),
-  join(dist, "third-party/dmzhub.md"),
-);
+const imageSources = join(root, "src/assets/third-party/items");
+for (const source of await readdir(imageSources, { withFileTypes: true })) {
+  if (!source.isDirectory()) continue;
+  await copyFile(
+    join(imageSources, source.name, "ATTRIBUTION.md"),
+    join(dist, "third-party", `${source.name}.md`),
+  );
+}

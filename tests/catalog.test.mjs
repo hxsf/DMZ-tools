@@ -100,7 +100,31 @@ test("手册指向真实武器，手册定义与解锁规则一一对应", () =>
   }
 });
 
-test("中间材料关系可展开，样本已知及争议配方都不构成循环", () => {
+test("打印目录覆盖全部九类及95种产出，武器不混入打印配方", () => {
+  assert.equal(catalog.recipes.length, 95);
+  assert.equal(new Set(catalog.recipes.map((recipe) => recipe.output.itemId)).size, 95);
+  const categories = {};
+  for (const recipe of catalog.recipes) {
+    const item = items.get(recipe.output.itemId);
+    assert.ok(item.kind === "ingredient" || item.kind === "equipment");
+    const category = item.kind === "ingredient" ? "ingredient" : item.category;
+    categories[category] = (categories[category] ?? 0) + 1;
+  }
+  // 2026-11-05 DMZHub 完整目录与 DMZTracker 去除升级后的目录相互核对。
+  assert.deepEqual(categories, {
+    consumable: 9,
+    backpack: 10,
+    "field-upgrade": 16,
+    ingredient: 14,
+    armor: 8,
+    tactical: 10,
+    lethal: 11,
+    "fire-support": 10,
+    gear: 7,
+  });
+});
+
+test("中间材料关系可展开，已知及争议配方都不构成循环", () => {
   const byOutput = new Map();
   for (const recipe of catalog.recipes) {
     const edges = byOutput.get(recipe.output.itemId) ?? new Set();

@@ -39,10 +39,10 @@ const definitions = [
 
 type WeaponSlug = (typeof definitions)[number][0];
 
-/** 官方简体博客的武器标题；尚未与客户端 UI 核对。 */
+/** 以用户提供的 32 项客户端购买目录核对中文名；保留官方博客旧名作为检索别名。 */
 const officialChineseNames: Partial<Record<WeaponSlug, string>> = {
   "50-gs": "点50GS",
-  "apoc-338": "APOC 338",
+  "apoc-338": "APOC-338",
   "astaroth-57": "点57阿塔罗斯",
   axion: "阿克西恩",
   "cronen-squall": "克洛南烈风",
@@ -50,7 +50,7 @@ const officialChineseNames: Partial<Record<WeaponSlug, string>> = {
   "han-86": "汉86",
   "hyeon-burst": "玄铁（点射型）",
   "iso-nightshade": "ISO夜影",
-  jokr: "JOKR",
+  jokr: "标枪导弹",
   "kg-7-vulcan": "KG-7火神",
   "kastov-762": "卡斯托夫762",
   "krait-p68": "环蛇P68",
@@ -58,29 +58,33 @@ const officialChineseNames: Partial<Record<WeaponSlug, string>> = {
   "mar-9": "MAR-9",
   "mojave-357": "莫哈韦点357",
   "mosin-nagant": "莫辛-纳甘",
-  oden: "奥登",
+  oden: "欧登",
   "oris-86": "奥里斯8.6",
   "pm-40-anvil": "PM-40铁砧",
-  "ppsh-41": "PPSh-41",
+  "ppsh-41": "PPSH-41",
   "patriot-xmr": "爱国者XMR",
   pila: "针式导弹",
   "rpg-8": "RPG-8",
   "rezi-12": "雷兹12",
+  "sang-9mm": "尚武9毫米",
   "signal-50": "西格诺50",
   "type-73": "73式",
   "vel-46": "威尔46",
-  "wz-55-striga": "Wz55斯崔加",
+  "wz-55-striga": "WZ55斯崔加",
   warlord: "战将",
   "x-58-nyx": "X-58夜神",
 };
 
-/** 同篇官方文章的其他用名；SANG 的异常译名仅作为检索别名保留。 */
+/** 官方博客旧名和其他用名；SANG 的官网异常译名仅作为检索别名保留。 */
 const officialNameAliases: Partial<Record<WeaponSlug, readonly string[]>> = {
+  "apoc-338": ["APOC 338"],
   "iso-nightshade": ["ISO幽夜"],
-  jokr: ["标枪导弹"],
-  oden: ["欧登"],
+  jokr: ["JOKR"],
+  oden: ["奥登"],
+  "ppsh-41": ["PPSh-41"],
   "signal-50": ["信号50"],
   "sang-9mm": ["尚武9毫米机匣"],
+  "wz-55-striga": ["Wz55斯崔加"],
 };
 
 function additionalSources(slug: string): readonly SourceId[] {
@@ -100,6 +104,7 @@ export const weaponManualEntries = definitions.map(([slug, en, manualEn, categor
   const sourceIds: readonly [SourceId, ...SourceId[]] = [
     "source:hub-weapon-manuals",
     "source:official-weapons-zh",
+    "source:user-weapon-screenshots",
     ...additionalSources(slug),
   ];
   const zhCN = officialChineseNames[slug];

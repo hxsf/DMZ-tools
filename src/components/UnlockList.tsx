@@ -15,8 +15,13 @@ const groupOrder = [
   "pistol",
   "launcher",
   "consumable",
+  "armor",
   "backpack",
+  "tactical",
+  "lethal",
   "field-upgrade",
+  "fire-support",
+  "gear",
   "ingredient",
   "other",
 ] as const;
