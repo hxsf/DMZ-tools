@@ -9,6 +9,7 @@ import plus from "@tabler/icons/outline/plus.svg?raw";
 import minus from "@tabler/icons/outline/minus.svg?raw";
 import trash from "@tabler/icons/outline/trash.svg?raw";
 import language from "@tabler/icons/outline/language.svg?raw";
+import close from "@tabler/icons/outline/x.svg?raw";
 
 const icons = {
   book,
@@ -22,6 +23,7 @@ const icons = {
   minus,
   trash,
   language,
+  x: close,
 };
 
 /** 静态导入的 Tabler 图标，内容不包含用户输入。 */

@@ -2,6 +2,13 @@ import type { Option } from "ts-results-es";
 import type { ItemId } from "./item";
 import type { RecipeId } from "./recipe";
 
+/** 编辑中的数量保留原始输入，只有通过校验后才进入制作目标。 */
+export interface PrintDraft {
+  readonly recipeId: RecipeId;
+  readonly quantity: string;
+  readonly outputPerCraft: string;
+}
+
 export interface MaterialRow {
   readonly itemId: ItemId;
   readonly required: number;

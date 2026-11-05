@@ -1,0 +1,420 @@
+.printer-page .calculator-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.95fr) minmax(0, 1.1fr);
+  align-items: stretch;
+  height: calc(100dvh - 124px);
+  min-height: 420px;
+  gap: 16px;
+}
+.printer-catalog {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+.printer-catalog-toolbar {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.printer-catalog-toolbar .catalog-search {
+  max-width: none;
+  width: 100%;
+}
+.printer-catalog-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.printer-category > .group-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f7f8fb;
+  padding: 8px 12px;
+  min-height: 40px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.printer-category > .group-heading::after {
+  display: none;
+}
+.printer-product-list[hidden] {
+  display: none;
+}
+.printer-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 66px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #edf0f5;
+}
+.printer-product-row.is-selected {
+  background: #f3f6ff;
+  box-shadow: inset 3px 0 var(--blue);
+}
+.printer-product-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  font-weight: 600;
+}
+.printer-product-name .item-image {
+  width: 48px;
+  height: 42px;
+}
+.printer-product-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.printer-product-copy .item-notice {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+}
+.printer-product-row > .quantity-stepper {
+  flex: 0 0 124px;
+}
+.printer-page .quantity-stepper input,
+.printer-summary .quantity-stepper input {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+.printer-page .quantity-stepper button,
+.printer-summary .quantity-stepper button {
+  flex-shrink: 0;
+  min-width: 30px;
+}
+.printer-review,
+.printer-summary {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+.printer-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.printer-summary .target-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  max-height: 45%;
+  min-height: 120px;
+}
+.printer-summary .panel-heading {
+  flex-shrink: 0;
+}
+.printer-summary .panel-heading h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.printer-summary .target-content {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 12px 12px;
+  overscroll-behavior: contain;
+}
+.printer-summary .target-columns,
+.printer-summary .target-row {
+  grid-template-columns: minmax(0, 1fr) 110px 72px 32px;
+  gap: 8px;
+}
+.printer-summary .target-columns {
+  position: sticky;
+  top: -8px;
+  background: #fff;
+  padding-top: 8px;
+  z-index: 1;
+}
+.printer-summary .target-row {
+  min-height: 64px;
+  padding: 8px 0;
+}
+.printer-summary .target-name {
+  overflow-wrap: anywhere;
+  gap: 8px;
+}
+.printer-summary .target-name .item-image {
+  width: 36px;
+  height: 36px;
+}
+.printer-summary .target-content .empty-state {
+  padding: 14px 4px;
+}
+.printer-summary .result-panel {
+  flex: 1;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+}
+.printer-material-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  flex: 1;
+}
+.printer-summary .action-row {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  padding: 12px;
+}
+.printer-summary .action-row .primary-button {
+  flex: 1;
+}
+.printer-summary .action-row .field-hint {
+  font-size: 11px;
+}
+.drawer {
+  position: fixed;
+  inset: auto 0 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: none;
+  height: min(90dvh, 900px);
+  max-height: calc(100dvh - 12px);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  background: #f7f8fa;
+  color: inherit;
+  font: inherit;
+  overflow: hidden;
+  box-shadow: 0 -8px 36px #19213020;
+}
+.drawer[open] {
+  display: flex;
+  flex-direction: column;
+}
+.drawer:not([open]) {
+  display: none;
+}
+.drawer::backdrop {
+  background: #17233570;
+}
+.drawer-heading {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+.drawer-heading h2 {
+  font-size: 14px;
+  margin: 0;
+}
+.drawer-heading button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px;
+  border: 0;
+}
+.drawer-body {
+  flex: 1;
+  min-height: 0;
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.printer-selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(62px + env(safe-area-inset-bottom));
+  z-index: 19;
+  min-height: 60px;
+  padding: 8px 12px;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 12px #19213008;
+}
+.printer-selection-bar > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.printer-selection-bar .primary-button {
+  min-height: 44px;
+  font-size: 13px;
+}
+@media (min-width: 721px) and (max-width: 1050px) {
+  .printer-page .calculator-layout {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    height: calc(100dvh - 100px);
+    gap: 12px;
+  }
+  .printer-product-row {
+    gap: 8px;
+    padding: 8px;
+  }
+  .printer-product-name {
+    gap: 8px;
+    font-size: 13px;
+  }
+  .printer-product-name .item-image {
+    width: 36px;
+    height: 36px;
+  }
+  .printer-product-row > .quantity-stepper {
+    flex-basis: 100px;
+  }
+  .printer-summary .target-columns,
+  .printer-summary .target-row {
+    grid-template-columns: minmax(0, 1fr) 94px 60px 28px;
+    gap: 5px;
+  }
+  .printer-summary .target-name {
+    font-size: 12px;
+  }
+  .printer-summary .target-columns {
+    font-size: 11px;
+  }
+}
+@media (max-width: 720px) {
+  .printer-page {
+    padding-bottom: 60px;
+  }
+  .printer-page .calculator-layout {
+    display: block;
+    height: auto;
+    min-height: 0;
+  }
+  .printer-catalog {
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .printer-catalog-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 0 0 8px;
+    background: #fff;
+    border-bottom: 0;
+  }
+  .printer-catalog-list {
+    overflow: visible;
+  }
+  .printer-category > .group-heading {
+    top: 46px;
+    padding: 8px;
+  }
+  .printer-product-row {
+    gap: 8px;
+    padding: 6px 8px;
+    min-height: 62px;
+  }
+  .printer-product-name {
+    gap: 8px;
+    font-size: 13px;
+  }
+  .printer-product-name .item-image {
+    width: 36px;
+    height: 36px;
+  }
+  .printer-product-row > .quantity-stepper {
+    flex-basis: 124px;
+  }
+  .printer-page .quantity-stepper button,
+  .printer-summary .quantity-stepper button {
+    min-width: 36px;
+    min-height: 44px;
+  }
+  .printer-page .quantity-stepper input,
+  .printer-summary .quantity-stepper input {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .drawer .printer-summary {
+    height: auto;
+    gap: 10px;
+  }
+  .drawer .target-panel {
+    max-height: none;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+  .drawer .target-content,
+  .drawer .printer-material-content {
+    overflow: visible;
+  }
+  .drawer .target-columns {
+    position: static;
+    padding-top: 0;
+    font-size: 10px;
+  }
+  .drawer .target-columns,
+  .drawer .target-row {
+    grid-template-columns: minmax(0, 1fr) 108px 56px 30px;
+    gap: 6px;
+  }
+  .drawer .target-name .item-image {
+    display: none;
+  }
+  .drawer .target-row > button {
+    min-height: 44px;
+  }
+  .drawer .target-name {
+    font-size: 12px;
+  }
+  .drawer .result-panel {
+    flex: 0 0 auto;
+  }
+  .drawer .action-row {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+  }
+}
+@media (max-width: 360px) {
+  .printer-product-name .item-image {
+    width: 30px;
+    height: 32px;
+  }
+  .printer-product-row {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  .printer-product-row > .quantity-stepper {
+    flex-basis: 116px;
+  }
+  .drawer-body {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .drawer .target-content {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .drawer .target-columns,
+  .drawer .target-row {
+    grid-template-columns: minmax(0, 1fr) 100px 50px 28px;
+    gap: 4px;
+  }
+  .printer-summary .quantity-stepper button {
+    min-width: 32px;
+  }
+  .printer-selection-bar {
+    padding: 8px;
+    gap: 6px;
+  }
+}

@@ -445,7 +445,6 @@ h3 {
   border-color: #b8d5c2;
   color: #2f6644;
 }
-.calculator-layout,
 .requirements-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.2fr);
@@ -569,60 +568,6 @@ details:not([open]) > summary > .icon {
 }
 .output-field {
   min-width: 0;
-}
-.add-item-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 0;
-  width: 100%;
-  border-style: dashed;
-  color: var(--blue);
-}
-.recipe-picker {
-  margin: 12px 0;
-}
-.recipe-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px;
-  color: var(--muted);
-}
-.recipe-search input {
-  width: 100%;
-}
-.recipe-options {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-top: 8px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
-.recipe-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 52px;
-  border: 0;
-  border-top: 1px solid #eef0f5;
-  border-radius: 0;
-  text-align: left;
-  padding: 6px 12px;
-}
-.recipe-option .item-image {
-  width: 40px;
-  height: 36px;
-}
-.recipe-option > span:not(.icon) {
-  flex: 1;
-}
-.recipe-option small {
-  display: block;
-  color: var(--muted);
-  font-size: 11px;
 }
 .checkbox-field {
   display: inline-flex;
@@ -804,7 +749,6 @@ details:not([open]) > summary > .icon {
   .catalog-progress .progress-label {
     display: none;
   }
-  .calculator-layout,
   .requirements-layout {
     grid-template-columns: 1fr 1fr;
     gap: 14px;
@@ -973,7 +917,6 @@ details:not([open]) > summary > .icon {
   .requirements-empty {
     padding: 24px 12px;
   }
-  .calculator-layout,
   .requirements-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
@@ -1017,9 +960,6 @@ details:not([open]) > summary > .icon {
   }
   .output-field input {
     min-height: 42px;
-  }
-  .recipe-option {
-    min-height: 52px;
   }
   .action-row {
     padding: 12px;
