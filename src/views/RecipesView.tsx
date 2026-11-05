@@ -1,13 +1,58 @@
+import { useTranslation } from "react-i18next";
+import { UnlockList, type UnlockEntry, type UnlockGroup } from "../components/UnlockList";
+import { useApp } from "../context";
+import { getItemName, itemById } from "../data/display";
+import { recipes } from "../data/recipes";
+import type { Item } from "../types/item";
+
+function recipeGroup(item: Item): UnlockGroup {
+  if (item.kind === "ingredient") return "ingredient";
+  if (item.kind === "equipment") {
+    if (
+      item.category === "consumable" ||
+      item.category === "backpack" ||
+      item.category === "field-upgrade"
+    )
+      return item.category;
+  }
+  return "other";
+}
+
 export default function RecipesView() {
-  return (
-    <section aria-labelledby="recipes-title">
-      <p class="eyebrow">解锁跟踪</p>
-      <h1 id="recipes-title">打印配方</h1>
-      <p class="page-description">查阅装备和材料的打印配方，记录解锁进度。</p>
-      <div class="empty-state">
-        <h2>配方资料整理中</h2>
-        <p>正在核对配方成本与解锁条件。配方查询和进度记录功能将在后续加入。</p>
-      </div>
-    </section>
-  );
+  const { t, i18n } = useTranslation();
+  const { stores, persist } = useApp();
+  const progress = stores.unlocks.state.value.recipes;
+  const language = i18n.resolvedLanguage ?? i18n.language;
+  const formatNumber = new Intl.NumberFormat(language);
+  const entries = recipes.flatMap((recipe): UnlockEntry[] => {
+    const item = itemById.get(recipe.output.itemId);
+    if (!item) return [];
+    const secondary =
+      recipe.cost.status === "reported"
+        ? recipe.cost.value.items
+            .map((amount) => {
+              const ingredient = itemById.get(amount.itemId);
+              return t("unlock.materialAmount", {
+                name: ingredient ? getItemName(ingredient, language) : amount.itemId,
+                quantity: formatNumber.format(amount.quantity),
+              });
+            })
+            .join(" · ")
+        : undefined;
+    return [
+      {
+        id: recipe.id,
+        item,
+        group: recipeGroup(item),
+        checked: progress[recipe.id]?.status === "unlocked",
+        secondary,
+        notice: recipe.cost.status === "conflicting" ? "costConflict" : undefined,
+        onChange(checked) {
+          stores.unlocks.setRecipe(recipe.id, checked ? "unlocked" : "locked");
+          void persist();
+        },
+      },
+    ];
+  });
+  return <UnlockList entries={entries} kind="recipes" />;
 }

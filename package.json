@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "npm run typecheck && vite build",
+    "build:pages": "npm run build -- --base=/DMZ-tools/ && node scripts/prepare-pages.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsrs --noEmit --fast",
     "lint": "TSRS_FAST=1 OXLINT_TSGOLINT_PATH=./node_modules/.bin/tsrs-lint oxlint --type-aware --deny-warnings src vite.config.ts",
@@ -16,8 +17,11 @@
   },
   "dependencies": {
     "@preact/signals": "2.11.4",
+    "@tabler/icons": "3.50.0",
+    "i18next": "26.7.1",
     "preact": "11.1.1",
     "preact-iso": "2.12.2",
+    "react-i18next": "17.1.12",
     "ts-results-es": "7.1.0"
   },
   "devDependencies": {

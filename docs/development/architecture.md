@@ -4,22 +4,32 @@
 
 项目按技术职责组织模块，目录内先平铺文件。`src/main.tsx` 负责挂载，`src/App.tsx` 负责布局与工具导航，`src/router.tsx` 使用 preact-iso 声明路径和懒加载页面。
 
-| 位置              | 职责                                                           |
-| ----------------- | -------------------------------------------------------------- |
-| `src/views/`      | 页面入口，配方、武器手册、打印计算器、需求清单各一个 View 文件 |
-| `src/components/` | 界面组件，当前包含公共导航                                     |
-| `src/types/`      | 跨模块类型，独立于 Preact 和 Signals                           |
-| `src/stores/`     | 用 @preact/signals 管理库存、解锁和计划，提供修改操作          |
-| `src/data/`       | 游戏资料样本、来源、资料版本和待核实信息                       |
-| `src/storage.ts`  | 用户存档校验及显式异步加载、保存，存储与响应式状态分离         |
-| `src/kv.ts`       | 异步 KV 的浏览器实现，封装 localStorage 访问                   |
-| `src/styles/`     | 全局样式                                                       |
+| 位置                          | 职责                                                           |
+| ----------------------------- | -------------------------------------------------------------- |
+| `src/views/`                  | 页面入口，配方、武器手册、打印计算器、需求清单各一个 View 文件 |
+| `src/components/`             | 公共导航、解锁列表、物品图片与材料清单等组件                   |
+| `src/types/`                  | 跨模块类型，独立于 Preact 和 Signals                           |
+| `src/stores/`                 | 用 @preact/signals 管理库存、解锁和计划，提供修改操作          |
+| `src/stores/app.ts`           | AppState：加载状态、保存队列和持久化结果                       |
+| `src/context.tsx`             | 为界面提供同一 AppState 实例                                   |
+| `src/calculations/`           | 直接材料需求、共享库存抵扣及计算问题                           |
+| `src/data/`                   | 游戏资料样本、来源、资料版本和待核实信息                       |
+| `src/i18n.ts`、`src/locales/` | i18next 初始化及中英文界面文案                                 |
+| `src/storage.ts`              | 用户存档校验及显式异步加载、保存，存储与响应式状态分离         |
+| `src/kv.ts`                   | 异步 KV 的浏览器实现，封装 localStorage 访问                   |
+| `src/styles/`                 | 全局样式                                                       |
 
-首版只包括打印配方和武器手册的解锁跟踪，不包含武器外观蓝图。当前 View 为公共框架占位，状态与存储模块尚未接入页面。共享用户状态按数据职责区分，多个页面共用库存。弹窗、输入草稿等临时状态留在组件内。
+首版包含 32 种武器手册和 10 项配方的解锁跟踪、直接材料打印计算器和打印需求清单，不包含武器外观蓝图、自由搜集入口或额外材料储备工具。各页面已接入共享用户状态；搜索、筛选、折叠与输入草稿等临时状态留在组件内。
 
-后续材料汇总、配方展开等纯计算放在 `src/calculations/`，由 store 的 computed 或页面调用。尚未实现的模块不预建空目录。路由采用 History 路径，生产静态服务器应将未命中文件的页面请求回退到 `index.html`。
+界面采用紧凑白底蓝色工作台，PC 顶部导航、手机底部导航，不重复显示页面大标题。解锁类别可折叠，搜索时匹配分组自动展开，清空搜索后恢复原折叠状态。默认中文，英文界面已实现；`i18next` 和 `react-i18next` 通过 Preact compat 接入，可见文案用 `<Trans>`，属性与其他字符串用 `t()`。
 
-游戏资料与个人记录分开保存，更新配方资料时保留用户的解锁状态、库存和计划。需求汇总应保留每项材料对应的目标，同一份库存只抵扣一次。打印计划的修改本身不扣库存；配方解锁、打印能力和材料足够也分别判断。
+`src/calculations/` 提供不依赖 UI 的直接材料计算，不递归展开中间材料配方。来源未知单次产量由用户显式填写，保存为制作目标的 `outputPerCraft`，不改公共资料。需求页仅接收计算器加入的目标，可完成、恢复或移除；相同材料汇总后，共享库存只抵扣一次。修改或完成计划不自动扣库存，解锁与需求计算彼此独立。
+
+游戏资料与个人记录分开保存，更新配方资料保留用户解锁、库存和计划。源码按技术职责平铺，不增加 `domain/`、`features/` 或每个工具各一套子目录，也不预建未使用的模块。路由采用 History 路径，生产静态服务器应将未命中文件的页面请求回退到 `index.html`。
+
+## 加载与保存
+
+`createAppState(kv)` 创建 store 与加载、保存状态，实例创建不访问存储。应用显式调用 `load()`；只有有效恢复或确认键不存在后才允许操作与保存，失败展示错误并允许重试，不覆盖原数据。用户操作显式调用 `persist()`，调用时固定快照，保存按队列串行执行。保存状态以实际写入结果为准，不通过自动订阅 store 触发写入。
 
 `src/types/storage.ts` 定义通用 `AsyncKV`：`get` 返回 `Promise<Result<Option<string>, KVError>>`，`set` 和 `delete` 返回 `Promise<Result<void, KVError>>`。`Result` 与 `Option` 均使用已有的 `ts-results-es`，配合标准 `async/await`。读取值为 `Ok(Some(value))`，键不存在为 `Ok(None)`，访问失败为 `Err`，不能通过 Promise rejection 表达。空字符串是 `Some("")`，不等于缺失。底层 localStorage 的返回值通过 `Option.fromNullable()` 在适配器中转换。KV 不处理 JSON、用户存档类型或 Signals，存档校验与版本处理留在 `storage.ts`。
 
@@ -39,18 +49,9 @@ localStorage 底层仍同步，这一包装只统一异步调用接口。以后�
 | `docs/development/`       | 本项目的开发与设计文档         | 不进入应用依赖图                  |
 | `docs/external/`          | 外部参考文档、手册、说明       | 仅开发查阅，不导入或复制到应用    |
 
-第三方资源建议按 `资源类别/来源/文件` 存放，例如 `src/assets/third-party/items/<source>/`。每个来源目录保存对应的 `ATTRIBUTION.md` 与原许可证，便于追踪单个文件的出处。
+第三方资源按 `资源类别/来源/文件` 存放，例如 `src/assets/third-party/items/<source>/`。每个来源目录保存对应的 `ATTRIBUTION.md` 与原许可证，便于追踪单个文件的出处。
 
-在业务代码中引用图片时，使用静态 `import`，例如：
-
-```tsx
-// 假设文件位于 src/components/ItemIcon.tsx，且已加入获得授权的图片。
-import itemIconUrl from "../assets/third-party/items/example-source/item.png";
-
-export function ItemIcon() {
-  return <img src={itemIconUrl} alt="物品名称" />;
-}
-```
+当前 26 张真实游戏图片位于 `src/assets/third-party/items/dmzhub/`，包括 18 张资源或物品、8 张武器。`src/data/images.ts` 静态导入并按物品 ID 映射，`ItemImage` 统一显示。缺少图片时保留名称，不使用生成图或替代图；对应 `ATTRIBUTION.md` 逐项记录出处。
 
 批量资源可使用带明确图片扩展名的 `import.meta.glob`，不要对整个第三方目录使用不受限制的通配符，以免将署名和许可说明当成运行时数据。小文件可能由 Vite 内联；大文件通常生成带哈希的资源文件。仅仅放入目录且未被引用的文件不会自动进入构建。
 

@@ -81,7 +81,10 @@ export function isRequirementPlan(value: unknown): value is RequirementPlan {
         isCount(target.quantity) &&
         target.quantity > 0 &&
         ((target.kind === "collect" && isId(target.itemId, "item:")) ||
-          (target.kind === "craft" && isId(target.recipeId, "recipe:"))),
+          (target.kind === "craft" &&
+            isId(target.recipeId, "recipe:") &&
+            (target.outputPerCraft === undefined ||
+              (isCount(target.outputPerCraft) && target.outputPerCraft > 0)))),
     )
   );
 }

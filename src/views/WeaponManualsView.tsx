@@ -1,13 +1,35 @@
+import { useTranslation } from "react-i18next";
+import { UnlockList, type UnlockEntry } from "../components/UnlockList";
+import { useApp } from "../context";
+import { getItemName, itemById } from "../data/display";
+import { manualUnlocks } from "../data/manuals";
+
 export default function WeaponManualsView() {
-  return (
-    <section aria-labelledby="manuals-title">
-      <p class="eyebrow">解锁跟踪</p>
-      <h1 id="manuals-title">武器手册</h1>
-      <p class="page-description">记录武器手册的搜集与撤离解锁进度。</p>
-      <div class="empty-state">
-        <h2>手册资料整理中</h2>
-        <p>正在核对手册与武器的对应关系。解锁记录功能将在后续加入。</p>
-      </div>
-    </section>
-  );
+  const { i18n } = useTranslation();
+  const { stores, persist } = useApp();
+  const progress = stores.unlocks.state.value.manuals;
+  const language = i18n.resolvedLanguage ?? i18n.language;
+  const entries = manualUnlocks.flatMap((manual): UnlockEntry[] => {
+    const item = itemById.get(manual.weaponItemId);
+    if (!item || item.kind !== "weapon") return [];
+    const manualItem = itemById.get(manual.manualItemId);
+    const name = getItemName(item, language);
+    return [
+      {
+        id: manual.manualItemId,
+        item,
+        group: item.category ?? "other",
+        checked: progress[manual.manualItemId]?.status === "unlocked",
+        secondary: name !== item.name.en ? item.name.en : undefined,
+        searchTerms: manualItem
+          ? [manualItem.name.en, manualItem.name.zhCN ?? "", ...(manualItem.name.aliases ?? [])]
+          : [],
+        onChange(checked) {
+          stores.unlocks.setManual(manual.manualItemId, checked ? "unlocked" : "locked");
+          void persist();
+        },
+      },
+    ];
+  });
+  return <UnlockList entries={entries} kind="manuals" />;
 }

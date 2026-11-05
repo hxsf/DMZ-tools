@@ -1,0 +1,72 @@
+name: Publish Pages branch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build:pages
+
+      - name: Publish build output to orphan pages branch
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: pages
+          publish_dir: ./dist
+          force_orphan: true
+          commit_message: Publish site from ${{ github.sha }}
+
+      # GITHUB_TOKEN pushes do not reliably trigger a branch-based Pages build.
+      # Request one explicitly, without changing the user's Pages settings.
+      - name: Request Pages build
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            let site;
+            try {
+              ({ data: site } = await github.rest.repos.getPages(context.repo));
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              const message = 'The pages branch is ready. In Settings → Pages, select Deploy from a branch → pages → /(root), then rerun this workflow.';
+              core.notice(message);
+              await core.summary.addHeading('Pages setup required').addRaw(message).write();
+              return;
+            }
+            if (site.build_type !== 'legacy' || site.source?.branch !== 'pages' || site.source?.path !== '/') {
+              core.setFailed('Set Settings → Pages to Deploy from a branch → pages → /(root).');
+              return;
+            }
+            await github.rest.repos.requestPagesBuild(context.repo);
+            await core.summary
+              .addHeading('Pages build requested')
+              .addRaw(`Published build output to the orphan pages branch. Deployment is queued for ${site.html_url}.`)
+              .write();

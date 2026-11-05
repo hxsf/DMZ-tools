@@ -1,11 +1,15 @@
+import { Trans, useTranslation } from "react-i18next";
+import { appPath } from "../paths";
+
 export default function NotFoundView() {
+  const { t } = useTranslation();
   return (
-    <section aria-labelledby="not-found-title">
-      <p class="eyebrow">404</p>
-      <h1 id="not-found-title">找不到这个页面</h1>
-      <p class="page-description">请检查链接，或从上方导航选择工具。</p>
-      <a class="text-link" href="/">
-        返回打印配方
+    <section class="empty-state">
+      <h1>
+        <Trans t={t} i18nKey="app.notFound" />
+      </h1>
+      <a href={appPath("/recipes")}>
+        <Trans t={t} i18nKey="app.home" />
       </a>
     </section>
   );

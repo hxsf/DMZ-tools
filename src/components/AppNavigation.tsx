@@ -1,21 +1,38 @@
 import { useLocation } from "preact-iso";
+import { Trans, useTranslation } from "react-i18next";
+import { Icon } from "./Icon";
+import { appPath } from "../paths";
 
 const links = [
-  { href: "/recipes", label: "打印配方" },
-  { href: "/weapon-manuals", label: "武器手册" },
-  { href: "/printer", label: "打印计算器" },
-  { href: "/requirements", label: "需求清单" },
-];
+  { href: "/recipes", key: "recipes", icon: "flask" },
+  { href: "/weapon-manuals", key: "manuals", icon: "book" },
+  { href: "/printer", key: "printer", icon: "calculator" },
+  { href: "/requirements", key: "requirements", icon: "checklist" },
+] as const;
 
 export function AppNavigation() {
   const { path } = useLocation();
-  const activePath = path === "/" ? "/recipes" : path.replace(/\/$/, "");
-
+  const { t } = useTranslation();
+  const rootPath = appPath("/").replace(/\/$/, "") || "/";
   return (
-    <nav class="app-navigation" aria-label="工具导航">
-      {links.map(({ href, label }) => (
-        <a key={href} href={href} aria-current={activePath === href ? "page" : undefined}>
-          {label}
+    <nav class="app-navigation">
+      {links.map((link) => (
+        <a
+          key={link.href}
+          href={appPath(link.href)}
+          aria-current={
+            path === appPath(link.href) || (path === rootPath && link.key === "recipes")
+              ? "page"
+              : undefined
+          }
+        >
+          <Icon name={link.icon} />
+          <span class="nav-long">
+            <Trans t={t} i18nKey={`nav.${link.key}`} />
+          </span>
+          <span class="nav-short">
+            <Trans t={t} i18nKey={`nav.${link.key}Short`} />
+          </span>
         </a>
       ))}
     </nav>

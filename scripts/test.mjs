@@ -11,7 +11,14 @@ try {
   const entry = join(temporary, "entry.ts");
   await writeFile(
     entry,
-    ["src/kv.ts", "src/storage.ts", "src/stores/index.ts", "src/data/catalog.ts"]
+    [
+      "src/kv.ts",
+      "src/storage.ts",
+      "src/stores/index.ts",
+      "src/stores/app.ts",
+      "src/calculations/materials.ts",
+      "src/data/catalog.ts",
+    ]
       .map((path) => `export * from ${JSON.stringify(resolve(root, path))};`)
       .join("\n"),
   );
