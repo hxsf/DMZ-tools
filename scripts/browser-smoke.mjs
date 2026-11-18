@@ -351,7 +351,27 @@ try {
   await page.goto(url("weapon-manuals"));
   await waitForApp(page, "weapon-manuals");
   const weapons = await checkImages(page);
-  assert.equal(weapons.length, 32);
+  assert.equal(weapons.length, 34);
+  const manualSearch = page.getByRole("searchbox");
+  for (const [query, name] of [
+    ["Cronen Osprey", "克罗南鱼鹰"],
+    ["CSG-35", "CSG-35"],
+  ]) {
+    await manualSearch.fill(query);
+    const match = page.locator(".item-card");
+    assert.equal(await match.locator(".item-name").textContent(), name);
+    await match.getByRole("checkbox").check();
+    await page.waitForFunction(
+      (id) => localStorage.getItem("dmz-tools:user")?.includes(id),
+      "item:manual-" + query.toLowerCase().replaceAll(" ", "-"),
+    );
+  }
+  await page.reload();
+  await waitForApp(page, "weapon-manuals");
+  for (const name of ["克罗南鱼鹰", "CSG-35"]) {
+    const match = page.locator(".item-card").filter({ has: page.getByText(name, { exact: true }) });
+    assert.equal(await match.getByRole("checkbox").isChecked(), true);
+  }
   assert.ok(
     weapons.every((image) => image.width > image.height),
     "Weapons use horizontal frames.",

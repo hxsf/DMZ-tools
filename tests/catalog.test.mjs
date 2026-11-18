@@ -103,8 +103,16 @@ test("稀有度覆盖已收集的108项物品，不把缺失或手册品质默�
 
 test("手册指向真实武器，手册定义与解锁规则一一对应", () => {
   const manuals = catalog.items.filter((item) => item.kind === "weapon-manual");
-  // 本批查阅的手册目录明确列出 32 项，不能退回仅三项的类型样例。
-  assert.equal(manuals.length, 32);
+  assert.equal(manuals.length, 34);
+  for (const [slug, category, zhCN] of [
+    ["cronen-osprey", "assault-rifle", "克罗南鱼鹰"],
+    ["csg-35", "smg", "CSG-35"],
+  ]) {
+    const weapon = items.get(`item:${slug}`);
+    assert.equal(weapon.category, category);
+    assert.equal(weapon.name.zhCN, zhCN);
+    assert.equal(items.get(`item:manual-${slug}`).weaponId, weapon.id);
+  }
   assert.equal(catalog.manualUnlocks.length, manuals.length);
   assert.equal(
     new Set(catalog.manualUnlocks.map((unlock) => unlock.manualItemId)).size,

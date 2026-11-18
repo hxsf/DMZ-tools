@@ -27,6 +27,8 @@ import imageCombatDrone from "../assets/third-party/items/dmzhub/combat-drone.we
 import imageCommsModule from "../assets/third-party/items/dmzhub/comms-module.webp";
 import imageControlUnit from "../assets/third-party/items/dmzhub/control-unit.webp";
 import imageCpu from "../assets/third-party/items/dmzhub/cpu.webp";
+import imageCronenOsprey from "../assets/third-party/items/ggranked/cronen-osprey.webp";
+import imageCsg35 from "../assets/third-party/items/ggranked/csg-35.webp";
 import imageCronenSquall from "../assets/third-party/items/dmzhub/cronen-squall.webp";
 import imageCrossfire from "../assets/third-party/items/dmzhub/crossfire.webp";
 import imageDdos from "../assets/third-party/items/dmzhub/ddos.webp";
@@ -179,6 +181,8 @@ export const itemImages: Partial<Record<ItemId, string>> = {
   "item:comms-module": imageCommsModule,
   "item:control-unit": imageControlUnit,
   "item:cpu": imageCpu,
+  "item:cronen-osprey": imageCronenOsprey,
+  "item:csg-35": imageCsg35,
   "item:cronen-squall": imageCronenSquall,
   "item:crossfire": imageCrossfire,
   "item:ddos": imageDdos,

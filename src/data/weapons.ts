@@ -1,7 +1,7 @@
 import type { ItemName, WeaponCategory } from "../types/item";
 import type { SourceId } from "../types/source";
 
-/** DMZHub 的 32 条手册目录：[项目键、武器名、手册条目名、武器类别]。 */
+/** DMZHub 手册目录：[项目键、武器名、手册条目名、武器类别、新增赛季]。 */
 const definitions = [
   ["50-gs", ".50 GS", "Manual: .50 GS", "pistol"],
   ["apoc-338", "APOC-338", "Manual: APOC-338", "lmg"],
@@ -35,17 +35,21 @@ const definitions = [
   ["warlord", "Warlord", "Manual: Warlord", "shotgun"],
   ["x-58-nyx", "X-58 Nyx", "Manual: X-58 Nyx", "smg"],
   ["sang-9mm", "Sang 9mm", "SANG 9mm", "pistol"],
-] as const satisfies readonly (readonly [string, string, string, WeaponCategory])[];
+  ["cronen-osprey", "Cronen Osprey", "Manual: Cronen Osprey", "assault-rifle", 1],
+  ["csg-35", "CSG-35", "Manual: CSG-35", "smg", 1],
+] as const satisfies readonly (readonly [string, string, string, WeaponCategory, number?])[];
 
 type WeaponSlug = (typeof definitions)[number][0];
 
-/** 以用户提供的 32 项客户端购买目录核对中文名；保留官方博客旧名作为检索别名。 */
+/** 首发名称由客户端截图核对，新增武器采用官方简中赛季公告用名。 */
 const officialChineseNames: Partial<Record<WeaponSlug, string>> = {
   "50-gs": "点50GS",
   "apoc-338": "APOC-338",
   "astaroth-57": "点57阿塔罗斯",
   axion: "阿克西恩",
+  "cronen-osprey": "克罗南鱼鹰",
   "cronen-squall": "克洛南烈风",
+  "csg-35": "CSG-35",
   "finn-lmg": "菲恩轻机枪",
   "han-86": "汉86",
   "hyeon-burst": "玄铁（点射型）",
@@ -100,13 +104,20 @@ function additionalSources(slug: string): readonly SourceId[] {
   }
 }
 
-export const weaponManualEntries = definitions.map(([slug, en, manualEn, category]) => {
-  const sourceIds: readonly [SourceId, ...SourceId[]] = [
-    "source:hub-weapon-manuals",
-    "source:official-weapons-zh",
-    "source:user-weapon-screenshots",
-    ...additionalSources(slug),
-  ];
+export const weaponManualEntries = definitions.map(([slug, en, manualEn, category, season]) => {
+  const sourceIds: readonly [SourceId, ...SourceId[]] =
+    season === 1
+      ? [
+          "source:hub-weapon-manuals",
+          "source:official-season-1-zh",
+          "source:official-season-1-pass",
+        ]
+      : [
+          "source:hub-weapon-manuals",
+          "source:official-weapons-zh",
+          "source:user-weapon-screenshots",
+          ...additionalSources(slug),
+        ];
   const zhCN = officialChineseNames[slug];
   const aliases = officialNameAliases[slug];
   const weaponName: ItemName = {
@@ -127,6 +138,7 @@ export const weaponManualEntries = definitions.map(([slug, en, manualEn, categor
     weaponName,
     manualName,
     category,
+    season,
     sourceIds,
   };
 });

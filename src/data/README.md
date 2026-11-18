@@ -1,6 +1,6 @@
 # 游戏资料
 
-本目录保存带来源的游戏资料，供解锁跟踪、打印计算和需求清单使用。当前包含 176 个物品（112 项物品 / 材料、32 把武器、32 份手册）、96 个打印配方、5 个能力定义和 32 个武器手册解锁关系。`catalog.coverage` 仍为 `sample`：本批覆盖所查来源的普通打印配方与手册目录，不表示覆盖所有版本、永久升级或其他游戏物品。这里不保存用户库存、个人进度或网页原文；图片文件另存 `src/assets/third-party/`。
+本目录保存带来源的游戏资料，供解锁跟踪、打印计算和需求清单使用。当前包含 180 个物品（112 项物品 / 材料、34 把武器、34 份手册）、96 个打印配方、5 个能力定义和 34 个武器手册解锁关系。`catalog.coverage` 仍为 `sample`：本批覆盖所查来源的普通打印配方与手册目录，不表示覆盖所有版本、永久升级或其他游戏物品。这里不保存用户库存、个人进度或网页原文；图片文件另存 `src/assets/third-party/`。
 
 `catalog.ts` 聚合这些数据；各条记录通过本项目定义的稳定 ID 关联。ID 不冒充游戏内部 ID。类型、运行数据和用户存档分离，更新资料不改变用户记录。
 
@@ -23,7 +23,7 @@
 
 此前扩充 85 项普通配方和 93 个物品记录，本次另新增员工卡及其配方，覆盖产出物和直接消耗材料；配方成本、解锁条件及打印能力分别保留来源。永久升级不混入普通物品配方：另有 [9 组 34 档升级研究](../../docs/development/upgrades-research.md)，原始整理数据在 [`docs/external/mw4-dmz/upgrades.json`](../../docs/external/mw4-dmz/upgrades.json)，尚未接入 `catalog`、解锁界面或需求计算。
 
-武器手册覆盖 [DMZHub Weapon Manual Collection](https://dmzhub.gg/weapons/manuals) 的 32 条记录，并与官方枪匠购买目录及用户提供的客户端截图对应。`weapons.ts` 集中保存名称、分类及关联，`items.ts` 和 `manuals.ts` 据此生成物品与解锁映射，保留原有稳定 ID 和额外来源。官方与社区武器总表的 33 件包含近战刀，不能由总数推算为 33 种可解锁手册；刀具手册的社区资料存在分歧，未加入本目录，详见 [武器覆盖核对](../../docs/development/weapon-coverage.md)。
+武器手册覆盖 [DMZHub Weapon Manual Collection](https://dmzhub.gg/weapons/manuals) 的 34 条记录。首发 32 条与官方枪匠购买目录及用户提供的客户端截图对应，第一赛季新增的两条按官方赛季公告和具名手册页核对。`weapons.ts` 集中保存名称、分类及关联，`items.ts` 和 `manuals.ts` 据此生成物品与解锁映射，保留原有稳定 ID 和额外来源。首发官方与社区武器总表的 33 件包含近战刀，不能由总数推算为 33 种可解锁手册；刀具手册的社区资料存在分歧，未加入本目录，详见 [武器覆盖核对](../../docs/development/weapon-coverage.md)。
 
 手册名称和武器名称分别保存，中文手册名为项目说明性名称。旧 `SANG 9mm` 手册条目的 `Manual: Sang 9mm` 检索别名仍保留。具体获取条件可以缺省，不影响用户手动标记是否解锁；已知通则只供参考。
 
@@ -39,11 +39,11 @@ DMZTracker 配方表的数据更新时间为 2026-11-02，CODMunity 配方规划
 
 客户端截图来源 `source:user-weapon-screenshots` 使用 `kind: "in-game"`，只证明截图中可见的名称和分类；未显示客户端构建号。社区中文站仍属于社区来源，不能因为使用中文就标为官方译名。
 
-原文、图像、商标等版权归原权利人；登记来源不改变其许可。应用资料只整理所需名称、分类、对应关系和数值事实，不复制网页正文。当前 144 张真实游戏图片通过 `images.ts` 按物品 ID 映射，手册复用对应枪图。逐图出处、原图链接与许可状态分别见 [DMZHub（119 张）](../assets/third-party/items/dmzhub/ATTRIBUTION.md)、[DMZTracker（23 张）](../assets/third-party/items/dmztracker/ATTRIBUTION.md)、[MW4Field（1 张）](../assets/third-party/items/mw4field/ATTRIBUTION.md)及 [GG Ranked（1 张）](../assets/third-party/items/ggranked/ATTRIBUTION.md)。配方来源 `dmztracker.com` 与图片来源 `dmztracker.gg` 分别登记，不混为同一 URL。
+原文、图像、商标等版权归原权利人；登记来源不改变其许可。应用资料只整理所需名称、分类、对应关系和数值事实，不复制网页正文。当前 146 张真实游戏图片通过 `images.ts` 按物品 ID 映射，手册复用对应枪图。逐图出处、原图链接与许可状态分别见 [DMZHub（119 张）](../assets/third-party/items/dmzhub/ATTRIBUTION.md)、[DMZTracker（23 张）](../assets/third-party/items/dmztracker/ATTRIBUTION.md)、[MW4Field（1 张）](../assets/third-party/items/mw4field/ATTRIBUTION.md)及 [GG Ranked（3 张）](../assets/third-party/items/ggranked/ATTRIBUTION.md)。配方来源 `dmztracker.com` 与图片来源 `dmztracker.gg` 分别登记，不混为同一 URL。
 
 ## 中文名称核对
 
-32 把武器的展示名已按用户提供的九张中文客户端「购买新武器」截图核对，完整名称与稳定 ID 见 [客户端名称记录](../../docs/development/weapon-name-verification.md)。相对旧官方博客名称，修正为“欧登”“尚武9毫米”“标枪导弹”“APOC-338”“WZ55斯崔加”和“PPSH-41”，原英文与旧称继续参与检索。ISO Nightshade、Signal 50 使用截图中的“ISO夜影”“西格诺50”；“ISO幽夜”“信号50”保留为别名。“尚武9毫米机匣”是旧官网异常译名，仅作为搜索别名。
+首发 32 把武器的展示名已按用户提供的九张中文客户端「购买新武器」截图核对，完整名称与稳定 ID 见 [客户端名称记录](../../docs/development/weapon-name-verification.md)。相对旧官方博客名称，修正为“欧登”“尚武9毫米”“标枪导弹”“APOC-338”“WZ55斯崔加”和“PPSH-41”，原英文与旧称继续参与检索。ISO Nightshade、Signal 50 使用截图中的“ISO夜影”“西格诺50”；“ISO幽夜”“信号50”保留为别名。“尚武9毫米机匣”是旧官网异常译名，仅作为搜索别名。
 
 其他物品优先按[官方简体等级表](https://www.callofduty.com/cn/zh/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige)与英文表的等级、奖励位置对应，补充明确的官方名称。未取得官方对应的名称以社区或项目来源区分，旧译名继续保留；不能把等级奖励中的成品当成配方奖励。`zhCNOrigin: "official"` 表示官方文字来源，不单独代表游戏实测；具体依据由 `sourceIds` 区分。更换译名不改变物品 ID、配方 ID 和用户进度。
 
@@ -59,7 +59,7 @@ DMZTracker 配方表的数据更新时间为 2026-11-02，CODMunity 配方规划
 
 `rarities.ts` 记录 2026-11-05 [DMZHub 配方目录](https://dmzhub.gg/3d-printer)中的产出物与材料 `rarity` 字段，再由 `items.ts` 合并为可选的 `Item.rarity: Fact<ItemRarity>`；同一材料的重复声明已核对一致。再补充客户端和具名页面确认的紫色员工卡，共 108 项：普通 16、精制 25、稀有 23、史诗 20、传奇 16、终极 8，覆盖全部 96 项配方产出以及 12 项其他材料。
 
-四类基础资源没有收录固定稀有度，保留深灰资源图标底色。32 把枪械和 32 份手册尚未收集到可靠的固定稀有度，保持中性背景；不能从关联手册、截图名称颜色或枪械配件数量推断枪械品质。缺失不会被自动当作普通品质，冲突声明也不着色。
+四类基础资源没有收录固定稀有度，保留深灰资源图标底色。34 把枪械和 34 份手册尚未收集到可靠的固定稀有度，保持中性背景；不能从关联手册、截图名称颜色或枪械配件数量推断枪械品质。缺失不会被自动当作普通品质，冲突声明也不着色。
 
 色相采用 DMZHub 同一目录的 `rarities` 配色和具名物品详情的徽标：普通 `#98989A`、精制 `#87B951`、稀有 `#4190C8`、史诗 `#9E94F6`、传奇 `#F89442`、终极 `#FC4F32`；中文标签对应其简体目录，属于社区来源。本站按客户端截图使用深色底、顶部色条和渐隐点阵，不声称这些社区色值就是客户端精确色值。普通物品使用方形图框，枪械保留横图。图片的悬停提示和替代文本同时说明稀有度，避免只用颜色传达含义。
 
