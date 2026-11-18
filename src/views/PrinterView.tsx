@@ -107,7 +107,12 @@ export default function PrinterView() {
         </div>
       )}
       <div class="calculator-layout">
-        <RecipeCatalog quantities={quantities} disabled={adding} onQuantityChange={setQuantity} />
+        <RecipeCatalog
+          quantities={quantities}
+          progress={stores.unlocks.state.value.recipes}
+          disabled={adding}
+          onQuantityChange={setQuantity}
+        />
         {mobile ? (
           <Drawer
             open={drawerOpen}

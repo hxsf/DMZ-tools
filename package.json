@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run typecheck && vite build",
-    "build:pages": "npm run build -- --base=/DMZ-tools/ && node scripts/prepare-pages.mjs",
+    "build": "npm run typecheck && node scripts/build.mjs",
+    "build:pages": "npm run build -- --base=/DMZ-tools/",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsrs --noEmit --fast",
     "lint": "TSRS_FAST=1 OXLINT_TSGOLINT_PATH=./node_modules/.bin/tsrs-lint oxlint --type-aware --deny-warnings src vite.config.ts",
@@ -28,6 +28,7 @@
     "@prefresh/vite": "4.0.1",
     "oxfmt": "0.76.0",
     "oxlint": "1.91.0",
+    "sharp": "0.35.5",
     "tsrs": "0.21.0-ts7.1.0-beta",
     "vite": "8.3.5"
   },

@@ -2,6 +2,7 @@ import { useEffect } from "preact/hooks";
 import { ErrorBoundary, LocationProvider } from "preact-iso";
 import { Trans, useTranslation } from "react-i18next";
 import { AppNavigation } from "./components/AppNavigation";
+import { PwaStatus } from "./components/PwaStatus";
 import { Icon } from "./components/Icon";
 import { useApp } from "./context";
 import { AppRouter } from "./router";
@@ -48,6 +49,7 @@ export function App() {
           </button>
         </div>
       </header>
+      <PwaStatus />
       <main id="main-content" class="app-content" tabIndex={-1}>
         {app.saveStatus.value === "error" && (
           <div class="notice error" role="alert">

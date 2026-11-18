@@ -2,6 +2,36 @@ import type { DataSource } from "../types/source";
 
 export const sources = [
   {
+    id: "source:user-x01-client",
+    title: "用户提供的 X01 中文客户端截图与配方、用名说明",
+    url: "https://github.com/hxsf/DMZ-tools/blob/main/docs/development/x01-client-verification.md",
+    kind: "in-game",
+    accessedOn: "2026-11-18",
+    publishedOn: null,
+    updatedOn: null,
+    gameVersion: "用户标明 X01 新增道具；客户端截图未显示构建号，证据范围见核对记录",
+  },
+  {
+    id: "source:hub-staff-emergency-exfil-keycard",
+    title: "DMZHub — Staff Emergency Exfil Keycard 3D Printer Recipe",
+    url: "https://dmzhub.gg/3d-printer/staff-emergency-exfil-keycard",
+    kind: "community",
+    accessedOn: "2026-11-18",
+    publishedOn: null,
+    updatedOn: "2026-11-06",
+    gameVersion: "MW4 DMZ Season 1（页面未提供客户端构建号）",
+  },
+  {
+    id: "source:ggranked-staff-emergency-exfil-keycard",
+    title: "GG Ranked — Staff Emergency Exfil Keycard",
+    url: "https://ggranked.com/games/call-of-duty-modern-warfare-4/modes/dmz/database/items/staff-emergency-exfil-keycard",
+    kind: "community",
+    accessedOn: "2026-11-18",
+    publishedOn: null,
+    updatedOn: "2026-11-13",
+    gameVersion: "MW4 DMZ Season 1（页面未提供客户端构建号）",
+  },
+  {
     id: "source:hub-printer-catalog",
     title: "DMZHub — 3D Printer recipe catalog",
     url: "https://dmzhub.gg/3d-printer",

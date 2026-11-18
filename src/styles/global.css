@@ -330,26 +330,33 @@ h3 {
 }
 .item-image {
   display: block;
-  background: #f3f4f6;
+  background: #201f1d;
   object-fit: contain;
-  width: 86px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
-  border-radius: 4px;
+  border: 1px solid #565754;
+  border-radius: 1px;
+  padding: 1px;
+}
+.item-image.is-weapon {
+  width: 96px;
+  height: 54px;
 }
 .item-image[data-rarity] {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--rarity-color) 16%, white),
-    color-mix(in srgb, var(--rarity-color) 55%, white)
-  );
-  border: 1px solid color-mix(in srgb, var(--rarity-color) 45%, white);
-  border-bottom: 3px solid var(--rarity-color);
-  padding: 4px;
+  background:
+    linear-gradient(125deg, transparent 6%, #201f1db8 58%, #201f1d 90%),
+    radial-gradient(circle at 1px 1px, var(--rarity-color) 0.8px, transparent 1px), #201f1d;
+  background-size:
+    100% 100%,
+    3px 3px,
+    auto;
+  border-top: 3px solid var(--rarity-color);
 }
-/* 色相取自 DMZHub 的具名物品稀有度标记；浅色混合适配本站白底界面。 */
+/* 色相取自具名来源；深色底、顶部色条和渐隐点阵按客户端截图呈现。 */
 .item-image[data-rarity="common"] {
   --rarity-color: #98989a;
+  background: #201f1d;
 }
 .item-image[data-rarity="uncommon"] {
   --rarity-color: #87b951;
@@ -367,8 +374,7 @@ h3 {
   --rarity-color: #fc4f32;
 }
 .item-image.is-resource {
-  background: #515967;
-  padding: 6px;
+  background: #343936;
 }
 .item-body {
   flex: 1;
@@ -543,7 +549,7 @@ details:not([open]) > summary > .icon {
   font-weight: 600;
 }
 .target-name .item-image {
-  width: 44px;
+  width: 40px;
   height: 40px;
 }
 .target-name > span {
@@ -734,8 +740,8 @@ details:not([open]) > summary > .icon {
   font-size: 13px;
 }
 .plan-target .item-image {
-  width: 44px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 }
 .plan-target > span {
   flex: 1;
@@ -754,6 +760,39 @@ details:not([open]) > summary > .icon {
 }
 .plans-panel + .result-panel > .field-hint {
   padding: 10px 16px;
+}
+@media (min-width: 1280px) {
+  .item-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 12px;
+  }
+  .item-card {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+}
+.pwa-status {
+  position: fixed;
+  z-index: 30;
+  right: 16px;
+  bottom: 16px;
+  max-width: min(460px, calc(100vw - 32px));
+  margin: 0;
+  background: #fff;
+  box-shadow: 0 4px 24px #19213020;
+}
+.pwa-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+@media (max-width: 720px) {
+  .pwa-status {
+    top: 8px;
+    right: 8px;
+    bottom: auto;
+    max-width: calc(100vw - 16px);
+  }
 }
 @media (max-width: 1050px) {
   .app-header {
@@ -928,7 +967,11 @@ details:not([open]) > summary > .icon {
     border-radius: 5px;
   }
   .item-image {
-    width: 62px;
+    width: 44px;
+    height: 44px;
+  }
+  .item-image.is-weapon {
+    width: 70px;
     height: 40px;
   }
   .item-name {
@@ -1076,7 +1119,12 @@ details:not([open]) > summary > .icon {
     padding: 6px 8px;
   }
   .item-card .item-image {
-    width: 50px;
+    width: 42px;
+    height: 42px;
+  }
+  .item-card .item-image.is-weapon {
+    width: 58px;
+    height: 38px;
   }
   .unlock-state {
     flex-direction: column;

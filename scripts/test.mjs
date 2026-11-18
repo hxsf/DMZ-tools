@@ -18,6 +18,7 @@ try {
       "src/stores/app.ts",
       "src/calculations/materials.ts",
       "src/data/catalog.ts",
+      "src/data/sorting.ts",
     ]
       .map((path) => `export * from ${JSON.stringify(resolve(root, path))};`)
       .join("\n"),

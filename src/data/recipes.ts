@@ -772,6 +772,38 @@ export const recipes = [
     },
   },
   {
+    id: "recipe:staff-emergency-exfil-keycard",
+    output: {
+      itemId: "item:staff-emergency-exfil-keycard",
+      quantity: {
+        status: "unknown",
+        note: "来源未明确每次打印产量；客户端库存数量与网页添加按钮不作为产量证据。",
+      },
+    },
+    cost: {
+      status: "reported",
+      value: {
+        items: [
+          { itemId: "item:electronics", quantity: 80 },
+          { itemId: "item:printed-circuit-board", quantity: 6 },
+          { itemId: "item:control-unit", quantity: 10 },
+        ],
+        cash: null,
+      },
+      sourceIds: [
+        "source:user-x01-client",
+        "source:hub-staff-emergency-exfil-keycard",
+        "source:ggranked-staff-emergency-exfil-keycard",
+      ],
+      note: "FOB 打印配方；用户文字说明与社区页面一致，未确认现金费用。",
+    },
+    requires: {
+      status: "reported",
+      value: ["3d-printer"],
+      sourceIds: ["source:hub-staff-emergency-exfil-keycard"],
+    },
+  },
+  {
     id: "recipe:door-breacher-charge",
     output: {
       itemId: "item:door-breacher-charge",

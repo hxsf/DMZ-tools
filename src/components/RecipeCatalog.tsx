@@ -2,6 +2,8 @@ import { useState } from "preact/hooks";
 import { Trans, useTranslation } from "react-i18next";
 import { getItemName, itemById } from "../data/display";
 import { recipes } from "../data/recipes";
+import { sortCatalogEntries } from "../data/sorting";
+import type { UnlockProgress } from "../types/progress";
 import type { RecipeId } from "../types/recipe";
 import { Icon } from "./Icon";
 import { ItemImage } from "./ItemImage";
@@ -28,6 +30,7 @@ const entries = recipes.flatMap((recipe) => {
 
 interface RecipeCatalogProps {
   readonly quantities: ReadonlyMap<RecipeId, string>;
+  readonly progress: UnlockProgress["recipes"];
   readonly disabled: boolean;
   readonly onQuantityChange: (recipeId: RecipeId, value: string) => void;
 }
@@ -36,7 +39,12 @@ function normalizeSearch(text: string): string {
   return text.normalize("NFKC").toLocaleLowerCase().replace(/\s+/g, "");
 }
 
-export function RecipeCatalog({ quantities, disabled, onQuantityChange }: RecipeCatalogProps) {
+export function RecipeCatalog({
+  quantities,
+  progress,
+  disabled,
+  onQuantityChange,
+}: RecipeCatalogProps) {
   const { t, i18n } = useTranslation();
   const language = i18n.resolvedLanguage ?? i18n.language;
   const format = new Intl.NumberFormat(language);
@@ -78,7 +86,11 @@ export function RecipeCatalog({ quantities, disabled, onQuantityChange }: Recipe
       </div>
       <div class="printer-catalog-list">
         {categoryOrder.map((category) => {
-          const rows = visible.filter((entry) => entry.category === category);
+          const rows = sortCatalogEntries(
+            visible.filter((entry) => entry.category === category),
+            (entry) => entry.item,
+            (entry) => progress[entry.recipe.id]?.status === "unlocked",
+          );
           if (rows.length === 0) return undefined;
           const expanded = !expandedState.has(category);
           const contentId = `printer-${category}-products`;

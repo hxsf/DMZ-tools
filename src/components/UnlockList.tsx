@@ -1,6 +1,7 @@
 import { useState } from "preact/hooks";
 import { Trans, useTranslation } from "react-i18next";
 import { getItemName } from "../data/display";
+import { sortCatalogEntries } from "../data/sorting";
 import type { Item } from "../types/item";
 import { Icon } from "./Icon";
 import { ItemImage } from "./ItemImage";
@@ -148,7 +149,11 @@ export function UnlockList({ entries, kind }: UnlockListProps) {
       </div>
       <div class="catalog-groups">
         {groups.map((group) => {
-          const rows = visible.filter((entry) => entry.group === group);
+          const rows = sortCatalogEntries(
+            visible.filter((entry) => entry.group === group),
+            (entry) => entry.item,
+            (entry) => entry.checked,
+          );
           if (rows.length === 0) return undefined;
           const expanded = !expandedState.has(group);
           const contentId = `${kind}-${group}-items`;

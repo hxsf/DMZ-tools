@@ -2,6 +2,16 @@ import { unlockZh } from "./unlock";
 
 export default {
   unlock: unlockZh,
+  pwa: {
+    offlineReady: "已可离线使用。",
+    updateReady: "新版已准备好。刷新会清空未加入需求的打印草稿。",
+    updating: "正在更新…",
+    unavailable: "离线缓存暂时不可用，联网使用不受影响。",
+    updateFailed: "更新未完成，可稍后重试。",
+    update: "刷新更新",
+    later: "稍后",
+    dismiss: "知道了",
+  },
   rarity: {
     common: "普通",
     uncommon: "精制",

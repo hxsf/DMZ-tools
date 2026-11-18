@@ -82,10 +82,10 @@ test("配方及其所有冲突版本的材料引用、数量和能力引用完�
   });
 });
 
-test("稀有度覆盖已收集的107项物品，不把缺失或手册品质默认成武器品质", () => {
+test("稀有度覆盖已收集的108项物品，不把缺失或手册品质默认成武器品质", () => {
   const rarities = new Set(["common", "uncommon", "rare", "epic", "legendary", "ultra"]);
   const known = catalog.items.filter((item) => item.rarity);
-  assert.equal(known.length, 107);
+  assert.equal(known.length, 108);
   for (const item of known) {
     assert.ok(item.kind === "ingredient" || item.kind === "equipment");
     claims(item.rarity).forEach((claim) => assert.ok(rarities.has(claim.value)));
@@ -119,9 +119,9 @@ test("手册指向真实武器，手册定义与解锁规则一一对应", () =>
   }
 });
 
-test("打印目录覆盖全部九类及95种产出，武器不混入打印配方", () => {
-  assert.equal(catalog.recipes.length, 95);
-  assert.equal(new Set(catalog.recipes.map((recipe) => recipe.output.itemId)).size, 95);
+test("打印目录覆盖全部九类及96种产出，武器不混入打印配方", () => {
+  assert.equal(catalog.recipes.length, 96);
+  assert.equal(new Set(catalog.recipes.map((recipe) => recipe.output.itemId)).size, 96);
   const categories = {};
   for (const recipe of catalog.recipes) {
     const item = items.get(recipe.output.itemId);
@@ -131,7 +131,7 @@ test("打印目录覆盖全部九类及95种产出，武器不混入打印配方
   }
   // 2026-11-05 DMZHub 完整目录与 DMZTracker 去除升级后的目录相互核对。
   assert.deepEqual(categories, {
-    consumable: 9,
+    consumable: 10,
     backpack: 10,
     "field-upgrade": 16,
     ingredient: 14,
@@ -157,4 +157,23 @@ test("中间材料关系可展开，已知及争议配方都不构成循环", ()
     for (const input of byOutput.get(itemId) ?? []) visit(input, new Set([...path, itemId]));
   }
   byOutput.forEach((_inputs, output) => visit(output));
+});
+
+test("X01 员工卡保留客户端名称、紫色品质与 FOB 材料，不把库存数视为产量", () => {
+  const item = items.get("item:staff-emergency-exfil-keycard");
+  assert.equal(item.kind, "equipment");
+  assert.equal(item.category, "consumable");
+  assert.equal(item.rarity.value, "epic");
+  const recipe = catalog.recipes.find((entry) => entry.output.itemId === item.id);
+  assert.equal(recipe.output.quantity.status, "unknown");
+  assert.equal(recipe.cost.status, "reported");
+  assert.equal(recipe.cost.value.cash, null);
+  assert.deepEqual(
+    Object.fromEntries(recipe.cost.value.items.map((entry) => [entry.itemId, entry.quantity])),
+    {
+      "item:electronics": 80,
+      "item:printed-circuit-board": 6,
+      "item:control-unit": 10,
+    },
+  );
 });

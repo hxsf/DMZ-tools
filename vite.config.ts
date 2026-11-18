@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import prefresh from "@prefresh/vite";
+import { gameImageAssets } from "./scripts/image-assets.mjs";
 
 export default defineConfig({
-  plugins: [await prefresh()],
+  plugins: [gameImageAssets(), await prefresh()],
   oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
   build: { minify: "oxc" },
   resolve: {

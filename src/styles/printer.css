@@ -67,7 +67,7 @@
 }
 .printer-product-name .item-image {
   width: 48px;
-  height: 42px;
+  height: 48px;
 }
 .printer-product-copy {
   min-width: 0;
@@ -271,8 +271,8 @@
     font-size: 13px;
   }
   .printer-product-name .item-image {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
   .printer-product-row > .quantity-stepper {
     flex-basis: 100px;
@@ -328,8 +328,8 @@
     font-size: 13px;
   }
   .printer-product-name .item-image {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
   .printer-product-row > .quantity-stepper {
     flex-basis: 124px;
@@ -387,8 +387,8 @@
 }
 @media (max-width: 360px) {
   .printer-product-name .item-image {
-    width: 30px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
   .printer-product-row {
     padding-left: 4px;

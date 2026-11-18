@@ -12,8 +12,13 @@ const definitions = [
   {
     id: "item:electronics",
     kind: "resource",
-    name: { en: "Electronics", zhCN: "电子设备", zhCNOrigin: "official" },
-    sourceIds: ["source:official-fob"],
+    name: {
+      en: "Electronics",
+      zhCN: "电子元件",
+      zhCNOrigin: "official",
+      aliases: ["电子设备"],
+    },
+    sourceIds: ["source:official-fob", "source:user-x01-client"],
   },
   {
     id: "item:chemicals",
@@ -108,7 +113,7 @@ const definitions = [
     kind: "equipment",
     category: "consumable",
     name: { en: "Medkit", zhCN: "医疗包", zhCNOrigin: "official" },
-    sourceIds: ["source:official-fob"],
+    sourceIds: ["source:official-fob", "source:user-x01-client"],
   },
   {
     id: "item:medium-backpack",
@@ -218,6 +223,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -324,6 +330,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -395,6 +402,21 @@ const definitions = [
     sourceIds: ["source:hub-printer-catalog", "source:hub-printer-catalog-zh"],
   },
   {
+    id: "item:staff-emergency-exfil-keycard",
+    kind: "equipment",
+    category: "consumable",
+    name: {
+      en: "Staff Emergency Exfil Keycard",
+      zhCN: "员工紧急出口出入卡",
+      zhCNOrigin: "official",
+    },
+    sourceIds: [
+      "source:user-x01-client",
+      "source:hub-staff-emergency-exfil-keycard",
+      "source:ggranked-staff-emergency-exfil-keycard",
+    ],
+  },
+  {
     id: "item:door-breacher-charge",
     kind: "equipment",
     category: "consumable",
@@ -407,6 +429,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -449,6 +472,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -458,9 +482,13 @@ const definitions = [
     name: {
       en: "Smelling Salts",
       zhCN: "嗅盐",
-      zhCNOrigin: "community",
+      zhCNOrigin: "official",
     },
-    sourceIds: ["source:hub-printer-catalog", "source:hub-printer-catalog-zh"],
+    sourceIds: [
+      "source:hub-printer-catalog",
+      "source:hub-printer-catalog-zh",
+      "source:user-x01-client",
+    ],
   },
   {
     id: "item:1-plate-armor-vest",
@@ -679,6 +707,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -694,6 +723,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -703,9 +733,13 @@ const definitions = [
     name: {
       en: "Flash",
       zhCN: "闪光弹",
-      zhCNOrigin: "community",
+      zhCNOrigin: "official",
     },
-    sourceIds: ["source:hub-printer-catalog", "source:hub-printer-catalog-zh"],
+    sourceIds: [
+      "source:hub-printer-catalog",
+      "source:hub-printer-catalog-zh",
+      "source:user-x01-client",
+    ],
   },
   {
     id: "item:heartbeat-sensor",
@@ -720,6 +754,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -735,6 +770,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -750,6 +786,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -765,6 +802,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -773,14 +811,15 @@ const definitions = [
     category: "tactical",
     name: {
       en: "Snapshot Grenade",
-      zhCN: "快照手雷",
+      zhCN: "探测手雷",
       zhCNOrigin: "official",
-      aliases: ["探测手雷"],
+      aliases: ["快照手雷"],
     },
     sourceIds: [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -811,6 +850,7 @@ const definitions = [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {
@@ -819,13 +859,15 @@ const definitions = [
     category: "lethal",
     name: {
       en: "C4",
-      zhCN: "塑胶炸弹",
+      zhCN: "C4",
       zhCNOrigin: "official",
+      aliases: ["塑胶炸弹"],
     },
     sourceIds: [
       "source:hub-printer-catalog",
       "source:hub-printer-catalog-zh",
       "source:official-progression-zh",
+      "source:user-x01-client",
     ],
   },
   {

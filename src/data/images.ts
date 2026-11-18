@@ -104,6 +104,7 @@ import imageSmokeWall from "../assets/third-party/items/dmzhub/smoke-wall.webp";
 import imageSnapshotGrenade from "../assets/third-party/items/dmzhub/snapshot-grenade.webp";
 import imageSpotterScope from "../assets/third-party/items/dmzhub/spotter-scope.webp";
 import imageStabilizedReagents from "../assets/third-party/items/dmzhub/stabilized-reagents.webp";
+import imageStaffEmergencyExfilKeycard from "../assets/third-party/items/ggranked/staff-emergency-exfil-keycard.webp";
 import imageStim from "../assets/third-party/items/dmzhub/stim.webp";
 import imageStockRod from "../assets/third-party/items/dmzhub/stock-rod.webp";
 import imageStructuralAlloy from "../assets/third-party/items/dmzhub/structural-alloy.webp";
@@ -271,6 +272,7 @@ export const itemImages: Partial<Record<ItemId, string>> = {
   "item:snapshot-grenade": imageSnapshotGrenade,
   "item:spotter-scope": imageSpotterScope,
   "item:stabilized-reagents": imageStabilizedReagents,
+  "item:staff-emergency-exfil-keycard": imageStaffEmergencyExfilKeycard,
   "item:stim": imageStim,
   "item:stock-rod": imageStockRod,
   "item:structural-alloy": imageStructuralAlloy,

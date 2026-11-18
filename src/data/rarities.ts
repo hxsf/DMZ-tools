@@ -112,13 +112,24 @@ const definitions = [
   ["item:zip-gun", "common"],
 ] as const satisfies readonly (readonly [ItemId, ItemRarity])[];
 
-export const itemRarities: Readonly<Partial<Record<ItemId, Fact<ItemRarity>>>> = Object.fromEntries(
-  definitions.map(([id, value]) => [
-    id,
-    {
-      status: "reported",
-      value,
-      sourceIds: ["source:hub-printer-catalog"],
-    } satisfies Fact<ItemRarity>,
-  ]),
-);
+export const itemRarities: Readonly<Partial<Record<ItemId, Fact<ItemRarity>>>> = {
+  ...Object.fromEntries(
+    definitions.map(([id, value]) => [
+      id,
+      {
+        status: "reported",
+        value,
+        sourceIds: ["source:hub-printer-catalog"],
+      } satisfies Fact<ItemRarity>,
+    ]),
+  ),
+  "item:staff-emergency-exfil-keycard": {
+    status: "reported",
+    value: "epic",
+    sourceIds: [
+      "source:user-x01-client",
+      "source:hub-staff-emergency-exfil-keycard",
+      "source:ggranked-staff-emergency-exfil-keycard",
+    ],
+  },
+};

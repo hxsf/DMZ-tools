@@ -8,6 +8,7 @@ export function ItemImage({ itemId }: { itemId: ItemId }) {
   const item = itemById.get(itemId);
   const source = itemImages[itemId];
   const isResource = item?.kind === "resource";
+  const isWeapon = item?.kind === "weapon";
   const rarity = item?.rarity?.status === "reported" ? item.rarity.value : undefined;
   const rarityLabel = rarity
     ? t("rarity.label", {
@@ -16,12 +17,13 @@ export function ItemImage({ itemId }: { itemId: ItemId }) {
     : undefined;
   return source ? (
     <img
-      class={`item-image${isResource ? " is-resource" : ""}`}
+      class={`item-image${isResource ? " is-resource" : ""}${isWeapon ? " is-weapon" : ""}`}
       data-rarity={rarity}
       src={source}
       alt={rarityLabel ?? ""}
       title={rarityLabel}
       loading="lazy"
+      decoding="async"
     />
   ) : undefined;
 }

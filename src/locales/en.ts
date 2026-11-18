@@ -2,6 +2,16 @@ import { unlockEn } from "./unlock";
 
 export default {
   unlock: unlockEn,
+  pwa: {
+    offlineReady: "Ready to use offline.",
+    updateReady: "An update is ready. Refreshing clears print drafts not added to requirements.",
+    updating: "Updating…",
+    unavailable: "Offline caching is unavailable. You can keep using the app online.",
+    updateFailed: "The update could not finish. Try again later.",
+    update: "Refresh to update",
+    later: "Later",
+    dismiss: "Dismiss",
+  },
   rarity: {
     common: "Common",
     uncommon: "Uncommon",
