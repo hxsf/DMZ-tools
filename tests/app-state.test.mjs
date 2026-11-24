@@ -253,3 +253,36 @@ test("无效特性选择和导入不改变原记录，损坏的特性存档阻�
   await blocked.persist();
   assert.equal(kv.calls.writes, 0);
 });
+
+test("旧特性树保留未记录的小特性位置，左右位置随各次快照独立保存", async () => {
+  const legacy = createEmptySnapshot();
+  legacy.perks = { ...legacy.perks, scout: [1, 2] };
+  const kv = memoryKV(legacy);
+  const writes = [];
+  const app = createAppState({
+    ...kv,
+    async set(key, text) {
+      writes.push(JSON.parse(text).perks);
+      return kv.set(key, text);
+    },
+  });
+  await app.load();
+  assert.deepEqual(app.stores.perks.state.value, legacy.perks);
+  assert.equal(kv.calls.writes, 0);
+
+  const left = { ...legacy.perks, minorPositions: { scout: { 2: 0 } } };
+  const right = { ...legacy.perks, minorPositions: { scout: { 2: 2 } } };
+  assert.equal(app.stores.perks.replace(left).isOk(), true);
+  const first = app.persist();
+  assert.equal(app.stores.perks.replace(right).isOk(), true);
+  const second = app.persist();
+  assert.deepEqual(await Promise.all([first, second]), [true, true]);
+  assert.deepEqual(writes, [left, right]);
+
+  const reopened = createAppState(kv);
+  await reopened.load();
+  assert.deepEqual(reopened.stores.perks.state.value, right);
+  const beyondSelectedRows = { ...right, minorPositions: { scout: { 4: 0 } } };
+  assert.equal(reopened.stores.perks.replace(beyondSelectedRows).isErr(), true);
+  assert.deepEqual(reopened.stores.snapshot().perks, right);
+});

@@ -8,6 +8,7 @@ export const perkSources = {
   officialEn:
     "https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-dmz-how-to-play-forward-operating-base-guide",
   directory: "https://dmzhub.gg/traits",
+  prestigeBranches: "https://finalexfil.com/wiki/trait/pro-traits",
   seasonOne:
     "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
   seasonOneZh:
@@ -981,6 +982,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 67,
     kind: "prestige",
+    tree: "warfighter",
     name: { en: "Adaptive Restock Pro", zh: "强化灵活补给" },
     description: {
       en: "The bonus loot item from an AI enemy is more likely to be rare.",
@@ -995,6 +997,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 68,
     kind: "prestige",
+    tree: "survivalist",
     name: { en: "Die Hard Pro", zh: "强化顽强抵抗" },
     description: {
       en: "In Last Stand you move faster, bleed indefinitely and automatically call an exfil when close.",
@@ -1009,6 +1012,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 69,
     kind: "prestige",
+    tree: "scout",
     name: { en: "Field Crafting Pro", zh: "强化前线制作" },
     description: {
       en: "Craft in the field with Common printer resources at half the usual resource cost.",
@@ -1023,6 +1027,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 70,
     kind: "prestige",
+    tree: "survivalist",
     name: { en: "Free Revive Pro", zh: "强化免费复苏" },
     description: {
       en: "The first Wound heals automatically. You can also use a tourniquet while Wounded.",
@@ -1037,6 +1042,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 71,
     kind: "prestige",
+    tree: "survivalist",
     name: { en: "Impact Smokes Pro", zh: "强化保命烟雾" },
     description: {
       en: "Getting downed releases a larger smoke cloud that lingers longer.",
@@ -1051,6 +1057,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 72,
     kind: "prestige",
+    tree: "survivalist",
     name: { en: "Numb The Pain Pro", zh: "强化麻木痛感" },
     description: {
       en: "Revival grants Painkiller and Smelling Salts effects.",
@@ -1065,6 +1072,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 73,
     kind: "prestige",
+    tree: "scout",
     name: { en: "Overwatch Pro", zh: "强化战场监控" },
     description: {
       en: "Towers you activate keep scanning indefinitely and cover a larger area.",
@@ -1079,6 +1087,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 74,
     kind: "prestige",
+    tree: "warfighter",
     name: { en: "Possum Pro", zh: "强化殊死抵抗" },
     description: {
       en: "Self-revive from death into Last Stand once per match, without the tourniquet health penalty.",
@@ -1093,6 +1102,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 75,
     kind: "prestige",
+    tree: "warfighter",
     name: { en: "Quick Fix Pro", zh: "强化越战越勇" },
     description: {
       en: "Health starts regenerating immediately on a kill against an AI enemy or enemy Operator.",
@@ -1107,6 +1117,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 76,
     kind: "prestige",
+    tree: "scout",
     name: { en: "Thermal Padding Pro", zh: "强化隔热防护" },
     description: {
       en: "UAV concealment also extends to a vehicle you occupy.",
@@ -1121,6 +1132,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 77,
     kind: "prestige",
+    tree: "scout",
     name: { en: "UAV Upgrade Pro", zh: "强化无人侦察机" },
     description: {
       en: "Upgrade UAVs to Advanced with longer coverage and duration. Your minimap zooms out 1.5×.",
@@ -1135,6 +1147,7 @@ export const perks: readonly Perk[] = [
   {
     wireId: 78,
     kind: "prestige",
+    tree: "warfighter",
     name: { en: "Viper Sense Pro", zh: "强化蝮蛇感应" },
     description: {
       en: "Thermal sights and AI targeting cannot detect you. Get a warning when an enemy Operator aims at you.",

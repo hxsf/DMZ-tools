@@ -1,15 +1,16 @@
+import type { ComponentChildren } from "preact";
 import { columns, names, rows, url } from "virtual:perk-atlas";
 import "./PerkIcon.css";
 
 const cells = new Map(names.map((name, index) => [name, index]));
 
-export function PerkIcon({ name }: { name: string }) {
+export function PerkIcon({ name, fallback }: { name: string; fallback?: ComponentChildren }) {
   const key = name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   const index = cells.get(key);
-  if (index === undefined) return undefined;
+  if (index === undefined) return <>{fallback}</>;
   const x = ((index % columns) * 100) / Math.max(1, columns - 1);
   const y = (Math.floor(index / columns) * 100) / Math.max(1, rows - 1);
   return (

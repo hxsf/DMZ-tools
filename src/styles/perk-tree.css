@@ -1,0 +1,459 @@
+.perk-tree-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border: 1px solid #313638;
+  border-radius: 8px;
+  background: #151819;
+  scrollbar-color: #66645a #202221;
+}
+.perk-tree-board {
+  --mark-size: clamp(29px, 3.15vw, 42px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(58px, 0.37fr);
+  grid-template-rows: repeat(9, auto) auto;
+  column-gap: clamp(5px, 1.2vw, 18px);
+  padding: clamp(6px, 1vw, 15px);
+  color: #faf9ef;
+}
+.perk-branch-diagram,
+.perk-prestige-diagram {
+  --tint: #c45f60;
+  --node-shape: polygon(24% 3%, 76% 3%, 100% 50%, 76% 97%, 24% 97%, 0% 50%);
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  grid-row: 1 / span 10;
+  display: grid;
+  grid-template-rows: subgrid;
+  background:
+    radial-gradient(
+      ellipse at 50% 102%,
+      color-mix(in srgb, var(--tint) 51%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tint) 31%, #1c1e20),
+      #262828 27%,
+      #252727 68%,
+      color-mix(in srgb, var(--tint) 23%, #1d2020)
+    );
+  border: 1px solid color-mix(in srgb, var(--tint) 55%, #363936);
+}
+.perk-branch-diagram[data-branch="warfighter"] {
+  clip-path: polygon(0 20px, 13px 0, calc(100% - 13px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+.perk-branch-diagram[data-branch="scout"] {
+  --tint: #c9ac4c;
+  --node-shape: circle(49%);
+  border-radius: 50% 50% 0 0 / 35px 35px 0 0;
+}
+.perk-branch-diagram[data-branch="survivalist"] {
+  --tint: #4cb6ba;
+  --node-shape: inset(2%);
+}
+.perk-tier {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.perk-tier:first-child {
+  padding-top: 19px;
+}
+.perk-tier-choices {
+  display: grid;
+  align-items: start;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  margin-inline: auto;
+}
+.perk-tier-choices[data-count="3"] {
+  width: 93%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.perk-tier-choices[data-count="2"] {
+  width: 92%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.perk-tier-choices[data-count="1"] {
+  width: 65%;
+  grid-template-columns: minmax(0, 1fr);
+}
+.perk-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
+  align-self: stretch;
+  padding: 2px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #e5e4d9;
+  line-height: 1.2;
+}
+.perk-node:disabled {
+  opacity: 1;
+  cursor: default;
+  color: #c0c0b7;
+}
+.perk-node:not(:disabled):hover,
+.perk-node:not(:disabled):focus-visible {
+  color: white;
+  background: color-mix(in srgb, var(--tint) 22%, transparent);
+}
+.perk-node:focus-visible {
+  outline-color: white;
+  outline-offset: -2px;
+}
+.perk-node-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--mark-size);
+  height: var(--mark-size);
+  background: color-mix(in srgb, var(--tint) 85%, white);
+  clip-path: var(--node-shape);
+}
+.perk-node-mark::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: #2b302f;
+  clip-path: var(--node-shape);
+}
+.perk-node-mark .perk-icon,
+.perk-node-fallback {
+  position: relative;
+  grid-area: 1 / 1;
+}
+.perk-node-mark .perk-icon {
+  width: 66%;
+  height: 66%;
+  background-color: transparent;
+  border-radius: 0;
+}
+.perk-node-fallback {
+  color: inherit;
+  font-size: calc(var(--mark-size) * 0.52);
+  font-weight: 700;
+}
+.perk-node-mark [data-perk-icon] + .perk-node-fallback {
+  display: none;
+}
+.perk-node:disabled .perk-node-mark {
+  background: #696c67;
+}
+.perk-node:disabled .perk-node-mark > span {
+  opacity: 0.73;
+}
+.perk-node[data-selected="true"] .perk-node-mark {
+  background: #fff7d8;
+}
+.perk-node[data-selected="true"] .perk-node-mark::before {
+  inset: 2px;
+  background: color-mix(in srgb, var(--tint) 75%, #202323);
+}
+.perk-tier[data-major="true"] .perk-node-mark {
+  width: calc(var(--mark-size) * 1.16);
+  height: calc(var(--mark-size) * 1.16);
+}
+.perk-node-name,
+.perk-node-description {
+  display: block;
+  overflow-wrap: anywhere;
+  width: 100%;
+  text-align: center;
+}
+.perk-node-name {
+  font-size: 12px;
+  font-weight: 650;
+}
+.perk-node-description {
+  font-size: 11px;
+  line-height: 1.38;
+  color: #d1d3cc;
+}
+.perk-branch-links {
+  display: block;
+  width: 100%;
+  height: clamp(8px, 1.1vw, 17px);
+  overflow: visible;
+  flex: none;
+}
+.perk-tree-board[data-mode="icon"] {
+  grid-template-rows: repeat(9, auto) max-content;
+}
+.perk-tree-board[data-mode="icon"] .perk-tier {
+  justify-content: flex-start;
+  --glyph-size: var(--mark-size);
+}
+.perk-tree-board[data-mode="icon"] .perk-tier[data-major="true"] {
+  --glyph-size: calc(var(--mark-size) * 1.16);
+}
+.perk-tree-board[data-mode="icon"] .perk-tier-choices {
+  flex: none;
+}
+.perk-tree-board[data-mode="icon"] .perk-branch-links {
+  flex: 1 0 auto;
+}
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::before,
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::after {
+  content: "";
+  position: absolute;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  height: max(0px, calc((100% - var(--glyph-size)) / 2));
+  background: color-mix(in srgb, var(--tint) 32%, #424741);
+}
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::before {
+  top: 0;
+}
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::after {
+  bottom: 0;
+}
+.perk-tree-board[data-mode="icon"] .perk-tier[data-row="9"] .perk-node::before,
+.perk-tree-board[data-mode="icon"] .perk-tier[data-row="1"] .perk-node::after {
+  display: none;
+}
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node[data-selected="true"]::before,
+.perk-tree-board[data-mode="icon"] .perk-tier .perk-node[data-selected="true"]::after {
+  background: var(--tint);
+}
+.perk-branch-links path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tint) 32%, #424741);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.perk-branch-links path.is-lit {
+  stroke: color-mix(in srgb, var(--tint) 75%, #fff6cb);
+  stroke-width: 2;
+}
+.perk-branch-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1px 9px;
+  margin: 0;
+  padding: 8px 3px;
+  border-top: 1px solid color-mix(in srgb, var(--tint) 35%, transparent);
+  font-size: 14px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.perk-branch-title small {
+  font-size: 11px;
+  color: #ecebdc;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.perk-prestige-diagram {
+  --tint: #c6a765;
+  --node-shape: polygon(4% 8%, 50% 0, 96% 8%, 87% 58%, 68% 85%, 50% 99%, 32% 85%, 13% 58%);
+}
+.perk-prestige-nodes {
+  grid-row: 1 / span 9;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: clamp(16px, 4vw, 48px);
+}
+.perk-prestige-nodes .perk-node {
+  min-height: 45px;
+}
+.perk-prestige-diagram .perk-branch-title {
+  grid-row: 10;
+}
+.perk-tree-board[data-mode="description"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(84px, 0.5fr);
+}
+.trait-picker {
+  width: min(calc(100% - 32px), 680px);
+  max-height: min(82dvh, 800px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: inherit;
+  background: white;
+}
+.trait-picker[open] {
+  display: flex;
+  flex-direction: column;
+}
+.trait-picker::backdrop {
+  background: #171d2bb3;
+}
+.trait-picker > header,
+.trait-picker-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.trait-picker > header {
+  justify-content: space-between;
+}
+.trait-picker > header button {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  padding: 6px;
+}
+.trait-picker-tools .catalog-search {
+  max-width: none;
+  min-width: 0;
+}
+.trait-picker-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.trait-pick-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.trait-pick-card > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.trait-pick-card h3 {
+  font-size: 14px;
+}
+.trait-pick-card p {
+  color: #4f596a;
+  font-size: 13px;
+}
+.trait-pick-card[data-selected="true"] {
+  background: #f1f5ff;
+  box-shadow: inset 3px 0 var(--blue);
+}
+.trait-pick-card .perk-choice {
+  align-self: center;
+  flex-shrink: 0;
+  color: var(--blue);
+}
+.trait-pick-card .perk-choice::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+.trait-pick-card .perk-mark,
+.trait-pick-card a {
+  position: relative;
+  z-index: 1;
+}
+.perk-tier-legend,
+.perk-prestige-legend {
+  display: none;
+}
+@media (max-width: 720px) {
+  .perk-tree-board {
+    --mark-size: clamp(18px, 4.9vw, 30px);
+    padding: 4px;
+    column-gap: 3px;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(35px, 0.43fr);
+  }
+  .perk-tree-board[data-mode="description"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(35px, 0.43fr);
+  }
+  .perk-node .perk-node-name,
+  .perk-node .perk-node-description {
+    display: none;
+  }
+  .perk-tier-legend,
+  .perk-prestige-legend {
+    display: grid;
+    gap: 5px;
+    align-content: start;
+  }
+  .perk-tier-legend {
+    padding: 2px clamp(2px, 1vw, 6px) 4px;
+  }
+  .perk-prestige-legend {
+    grid-column: 1 / -1;
+    padding: 8px 6px 4px;
+    color: #f6ebcb;
+  }
+  .perk-tier-note {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .perk-tier-note small {
+    margin-inline-end: 3px;
+    font-size: 10px;
+    color: #c6c8be;
+  }
+  .perk-tier-note .perk-node-name {
+    display: inline;
+    font-size: 11px;
+  }
+  .perk-tier-note .perk-node-description {
+    text-align: start;
+    font-size: 11px;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier {
+    justify-content: flex-start;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier-choices {
+    flex: none;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-branch-links {
+    margin-top: auto;
+  }
+  .perk-branch-diagram[data-branch="warfighter"] {
+    clip-path: polygon(0 13px, 8px 0, calc(100% - 8px) 0, 100% 13px, 100% 100%, 0 100%);
+  }
+  .perk-branch-diagram[data-branch="scout"] {
+    border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+  }
+  .perk-tier:first-child {
+    padding-top: 10px;
+  }
+  .perk-node {
+    min-height: 30px;
+    padding: 1px;
+  }
+  .perk-tier .perk-branch-links {
+    height: 7px;
+  }
+  .perk-branch-title {
+    display: grid;
+    justify-items: center;
+    padding: 4px 0;
+    font-size: 12px;
+  }
+  .perk-branch-title small {
+    font-size: 10px;
+  }
+  .trait-picker {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 86dvh;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .trait-picker button:not(.perk-mark) {
+    min-height: 44px;
+  }
+}

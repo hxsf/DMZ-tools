@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-const { decodePerkBuild, emptyPerkBuild, encodePerkBuild, isPerkBuild, perks } = await import(
-  process.env.DMZ_TEST_RUNTIME
-);
+const {
+  decodePerkBuild,
+  emptyPerkBuild,
+  encodePerkBuild,
+  getMinorPosition,
+  isPerkBuild,
+  perks,
+  withMinorPosition,
+} = await import(process.env.DMZ_TEST_RUNTIME);
 
 const branches = ["warfighter", "scout", "survivalist"];
 
@@ -59,8 +65,9 @@ function choices(branch, depth) {
   );
 }
 
-test("任意合法分支深度均可往返，满点三永久槽最多 20 个字符", () => {
+test("任意合法分支深度均可往返，V1 最长 20 字符、带左右位置的 V2 最长 23 字符", () => {
   let maxLength = 0;
+  let maxPositionedLength = 0;
   for (let a = 0; a <= 9; a++) {
     for (let b = 0; b <= 9; b++) {
       for (let c = 0; c <= 9 && a + b + c <= 18; c++) {
@@ -75,11 +82,23 @@ test("任意合法分支深度均可往返，满点三永久槽最多 20 个字�
           assert.equal(encoded.isOk(), true);
           assert.deepEqual(decodePerkBuild(encoded.value).value, build);
           maxLength = Math.max(encoded.value.length, maxLength);
+          let positioned = build;
+          for (const tree of branches) {
+            for (const row of [2, 4, 5, 7, 8]) {
+              if (row <= build[tree].length) {
+                positioned = withMinorPosition(positioned, tree, row, 2);
+              }
+            }
+          }
+          const code = encodePerkBuild(positioned).value;
+          assert.deepEqual(decodePerkBuild(code).value, positioned);
+          maxPositionedLength = Math.max(code.length, maxPositionedLength);
         }
       }
     }
   }
   assert.equal(maxLength, 20);
+  assert.equal(maxPositionedLength, 23);
 });
 
 test("拒绝非法编号、错误主特性分支、断层、重复或超出点数的树", () => {
@@ -106,7 +125,7 @@ test("拒绝非法编号、错误主特性分支、断层、重复或超出点�
 });
 
 test("导入拒绝未知版本、无效文本、截断、额外数据和保留位", () => {
-  assert.equal(decodePerkBuild("AgA").error, "unsupported-version");
+  assert.equal(decodePerkBuild("AwA").error, "unsupported-version");
   for (const code of [
     "",
     "AQ",
@@ -117,7 +136,10 @@ test("导入拒绝未知版本、无效文本、截断、额外数据和保留�
     "A+A",
     "A/A",
     "NULL!",
-    "A".repeat(21),
+    "A".repeat(24),
+    "AgA", // V2 不允许全部居中
+    "DgDAYA", // 此树仅有一个三选一槽位，三进制值 3 超出范围
+    "DgDAIAA", // 左选的 V2 短码后多一个空字节
     "BQA", // 头部声明一个小特性，但没有载荷
     "AQAA", // 空树后多一字节
     "BQDA", // 载荷高位有非零填充
@@ -125,5 +147,73 @@ test("导入拒绝未知版本、无效文本、截断、额外数据和保留�
     "AUAP", // 4 位载荷中未分配的永久特性
   ]) {
     assert.equal(decodePerkBuild(code).error, "invalid-code", code);
+  }
+});
+
+test("V2 保存三选一的左中右，改回居中能还原同一个 V1 短码", () => {
+  const base = decodePerkBuild("DQDAAA").value;
+  assert.equal(getMinorPosition(base, "warfighter", 2), 1);
+  for (const [position, code] of [
+    [0, "DgDAIA"],
+    [1, "DQDAAA"],
+    [2, "DgDAQA"],
+  ]) {
+    const updated = withMinorPosition(base, "warfighter", 2, position);
+    assert.equal(encodePerkBuild(updated).value, code);
+    assert.equal(getMinorPosition(decodePerkBuild(code).value, "warfighter", 2), position);
+    assert.deepEqual(withMinorPosition(updated, "warfighter", 2, 1), base);
+    assert.deepEqual(withMinorPosition(updated, "warfighter", 2, undefined), base);
+  }
+});
+
+test("三棵树的左中右三进制槽位相互独立", () => {
+  const base = { warfighter: [1, 2], scout: [3, 4], survivalist: [5, 6], prestige: [67] };
+  const codes = new Set();
+  for (const a of [0, 1, 2]) {
+    for (const b of [0, 1, 2]) {
+      for (const c of [0, 1, 2]) {
+        let build = base;
+        for (const [index, tree] of branches.entries()) {
+          build = withMinorPosition(build, tree, 2, [a, b, c][index]);
+        }
+        const code = encodePerkBuild(build).value;
+        codes.add(code);
+        assert.deepEqual(decodePerkBuild(code).value, build);
+      }
+    }
+  }
+  assert.equal(codes.size, 27);
+});
+
+test("修改或移除已有阶数只更新该树的位置；删到一阶后清除所有失效位置", () => {
+  const build = {
+    ...emptyPerkBuild(),
+    warfighter: choices(0, 5),
+    scout: choices(1, 2),
+    minorPositions: { warfighter: { 2: 0, 4: 2, 5: 0 }, scout: { 2: 2 } },
+  };
+  const trimmed = withMinorPosition({ ...build, warfighter: [1] }, "warfighter", 5, undefined);
+  assert.deepEqual(trimmed.minorPositions, { scout: { 2: 2 } });
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(trimmed).value).value, trimmed);
+  assert.equal(getMinorPosition(build, "warfighter", 5), 0);
+  assert.deepEqual(withMinorPosition(trimmed, "warfighter", 1, 2), trimmed);
+});
+
+test("存档拒绝无效的三选一位置", () => {
+  const base = { ...emptyPerkBuild(), warfighter: choices(0, 3) };
+  for (const minorPositions of [
+    null,
+    [],
+    { recon: { 2: 0 } },
+    { prestige: {} },
+    { warfighter: [0] },
+    { warfighter: { 1: 0 } },
+    { warfighter: { 3: 0 } },
+    { warfighter: { 4: 2 } },
+    { warfighter: { "02": 2 } },
+    { warfighter: { 2: 1 } },
+    { warfighter: { 2: "0" } },
+  ]) {
+    assert.equal(isPerkBuild({ ...base, minorPositions }), false);
   }
 });

@@ -1,0 +1,105 @@
+.perk-directory {
+  min-width: 0;
+  scroll-margin-top: 1rem;
+}
+.perk-directory-top,
+.perk-directory-top h2,
+.perk-directory-filters {
+  display: flex;
+  align-items: center;
+}
+.perk-directory-top {
+  justify-content: space-between;
+  gap: 10px 22px;
+  flex-wrap: wrap;
+}
+.perk-directory-top h2 {
+  gap: 8px;
+  font-size: 16px;
+}
+.perk-directory .catalog-search {
+  flex: 1 1 16rem;
+  max-width: 28rem;
+}
+.perk-directory-filters {
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 10px 0;
+}
+.perk-directory-filters button {
+  min-height: 32px;
+  padding: 3px 12px;
+  border-radius: 5px;
+}
+.perk-directory-filters button[aria-pressed="true"] {
+  border-color: var(--blue);
+  color: #fff;
+  background: var(--blue);
+}
+.perk-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.perk-directory .perk-entry {
+  display: block;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: white;
+}
+.perk-card-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.perk-card-head h3 {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.perk-card-category {
+  color: var(--muted);
+  text-align: end;
+  font-size: 12px;
+}
+.perk-card-prestige {
+  display: block;
+  color: #70551d;
+}
+.perk-card-effect {
+  margin-top: 7px;
+  color: #4f596a;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.perk-art-missing {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px dashed var(--border);
+  border-radius: 0.25rem;
+  color: var(--muted);
+  font-size: 10px;
+}
+@media (min-width: 1280px) {
+  .perk-directory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .perk-directory-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .perk-directory .catalog-search {
+    max-width: none;
+  }
+  .perk-directory-filters button {
+    min-height: 40px;
+    padding-inline: 9px;
+  }
+}

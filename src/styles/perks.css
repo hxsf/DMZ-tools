@@ -1,74 +1,123 @@
+.perks-page {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+#traits-tree {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: calc(100svh - 100px);
+}
+#traits-tree > .perk-tree-scroll {
+  display: grid;
+  flex: 1;
+}
+@media (min-width: 721px) and (max-width: 1050px) {
+  #traits-tree {
+    min-height: calc(100svh - 96px);
+  }
+}
+@media (max-width: 720px) {
+  #traits-tree {
+    min-height: calc(100svh - 82px - env(safe-area-inset-bottom));
+  }
+}
 .perk-toolbar,
-.perk-progress,
+.perk-board-actions,
+.tree-display-modes,
 .perk-language,
-.perks-page summary {
+.perk-share summary {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
-.perk-toolbar,
-.perk-progress {
+.perk-toolbar {
   flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 6px 14px;
+  margin-bottom: 8px;
 }
-.perk-language {
-  font-size: 12px;
-}
-.perk-progress {
-  justify-content: flex-start;
-  gap: 8px 16px;
-}
-.perk-progress strong {
-  color: var(--blue);
-  white-space: nowrap;
+.perk-points {
+  color: #313c4c;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
-.perk-group,
-.perk-share,
-.perk-branch {
-  min-width: 0;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+.tree-display-modes {
+  gap: 2px;
+  border: 1px solid #cbd2da;
+  padding: 2px;
+  background: #e9edf1;
+  border-radius: 6px;
 }
-.perks-page summary {
-  min-height: 40px;
-  padding: 7px 12px;
-  font-weight: 650;
-  border-radius: 8px;
+.tree-display-modes button {
+  min-height: 28px;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #515c69;
+  font-size: 13px;
+  font-weight: 600;
 }
-.perks-page details[open] > summary {
-  border-bottom: 1px solid var(--border);
-  border-radius: 8px 8px 0 0;
+.tree-display-modes button[aria-pressed="true"] {
+  background: #26313e;
+  color: #fff;
 }
-.perks-page summary .icon {
+.tree-display-modes button:not([aria-pressed="true"]):hover {
+  background: #fff;
+}
+.perk-board-actions {
+  gap: 8px;
+  margin-inline-start: auto;
+}
+.perk-language,
+.perk-share summary {
+  gap: 5px;
+  min-height: 34px;
+  font-size: 12px;
+}
+.perk-language {
+  padding: 4px 6px;
+  border-color: transparent;
+  background: transparent;
+  color: #425265;
+}
+.perk-language .icon,
+.perk-share .icon {
   width: 16px;
   height: 16px;
   flex-basis: 16px;
 }
-.perk-count {
-  margin-inline-start: auto;
-  color: var(--muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
+.perk-share {
+  position: relative;
 }
-.perk-share,
-.perk-search,
-.perk-group {
-  margin-bottom: 12px;
+.perk-share summary {
+  list-style: none;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 6px;
 }
-.perk-code-fields,
-.perk-tree-grid,
-.perk-catalog-grid,
-.perk-prestige .perk-slots {
-  display: grid;
-  gap: 12px;
-  align-items: start;
+.perk-share summary::-webkit-details-marker {
+  display: none;
+}
+.perk-share[open] summary .icon {
+  transform: rotate(180deg);
+}
+.perk-share-panel {
+  position: absolute;
+  top: calc(100% + 5px);
+  inset-inline-end: 0;
+  z-index: 10;
+  width: min(460px, calc(100vw - 32px));
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 26px #15233126;
 }
 .perk-code-fields {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: 12px;
+  display: grid;
+  gap: 12px;
 }
 .perk-code-fields label {
   display: block;
@@ -83,105 +132,16 @@
   flex: 1;
   font-family: ui-monospace, monospace;
 }
-.perk-code-line button {
-  flex-shrink: 0;
-}
-.perk-share > p {
-  padding: 0 12px 10px;
+.perk-share-panel > p {
+  margin-top: 8px;
 }
 .perk-error {
   color: #a43127;
-}
-.perk-tree-grid,
-.perk-catalog-grid,
-.perk-prestige .perk-slots {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.perk-prestige {
-  grid-column: 1 / -1;
-}
-.perk-slots {
-  margin: 0;
-  padding: 0 10px;
-  list-style: none;
-}
-.perk-slot,
-.perk-entry {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  min-width: 0;
-  padding: 8px 0;
-}
-.perk-slot + .perk-slot,
-.perk-entry {
-  border-top: 1px solid #edf0f5;
-}
-.perk-slot select {
-  width: 100%;
-  min-height: 34px;
-  padding: 4px 6px;
-}
-.perk-slot.is-upcoming .perk-slot-body {
-  display: flex;
-  gap: 8px;
-  justify-content: space-between;
-  align-items: center;
-}
-.perk-slot.is-upcoming select {
-  appearance: none;
-  width: auto;
-  max-width: 50%;
-  min-height: 24px;
-  padding: 0 2px;
-  border: 0;
-  opacity: 1;
-  color: var(--muted);
-  font-size: 12px;
-}
-.perk-slot.is-upcoming {
-  align-items: center;
-  padding: 5px 0;
-}
-.perk-index {
-  flex: 0 0 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--muted);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-}
-.perk-slot.is-selected .perk-index {
-  background: var(--blue);
-  border-color: var(--blue);
-  color: white;
-}
-.perk-slot.is-next .perk-index {
-  border-color: var(--blue);
-  color: var(--blue);
-}
-.perk-slot-body,
-.perk-entry > div {
-  min-width: 0;
-  flex: 1;
-  overflow-wrap: anywhere;
-}
-.perk-entry h3 {
-  font-size: 14px;
 }
 .perk-meta,
 .perk-reference {
   color: var(--muted);
   font-size: 12px;
-}
-.perk-entry p,
-.perk-slot p {
-  margin-top: 3px;
-  color: #4f596a;
-  font-size: 13px;
 }
 .perk-source-short {
   display: inline-grid;
@@ -210,40 +170,20 @@
   gap: 3px 8px;
   margin-top: 4px;
 }
-.perk-catalog-grid {
-  align-items: stretch;
-  gap: 0 16px;
-  padding: 0 12px;
-}
-.perk-prestige .perk-slots {
-  gap: 0 12px;
-}
-@media (min-width: 1280px) {
-  .perk-tree-grid,
-  .perk-catalog-grid,
-  .perk-prestige .perk-slots {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
+
 @media (max-width: 720px) {
-  .perk-tree-grid,
-  .perk-catalog-grid,
-  .perk-prestige .perk-slots,
-  .perk-code-fields {
-    grid-template-columns: minmax(0, 1fr);
+  .perks-page {
+    gap: 18px;
   }
   .perk-toolbar {
     gap: 4px 8px;
   }
-  .perk-tree-grid {
-    gap: 8px;
+  .tree-display-modes button {
+    padding-inline: 7px;
+    min-height: 33px;
   }
-  .perk-progress {
-    gap: 2px 8px;
-  }
-  .perks-page summary,
-  .perk-slot select:not(:disabled),
-  .perk-code-line button {
-    min-height: 44px;
+  .perk-language,
+  .perk-share summary {
+    min-height: 36px;
   }
 }

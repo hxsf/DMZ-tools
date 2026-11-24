@@ -4,7 +4,7 @@ import { readFile, stat, mkdir } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { gzipSync } from "node:zlib";
 import { parseArgs } from "node:util";
-import { checkTraits, checkTraitAtlas } from "./traits-smoke.mjs";
+import { checkTraits, checkOfflineTraits, checkColdTraitAtlas } from "./traits-smoke.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -231,6 +231,7 @@ try {
     await networkMeasurement(values["baseline-dist"], "/", "baseline", false);
   }
   await networkMeasurement(values.dist, scope, "optimized-with-precache", true);
+  await checkColdTraitAtlas(browser, url("traits/"));
 
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   contexts.push(context);
@@ -452,7 +453,11 @@ try {
   });
 
   // The fresh context visits only recipes online before loading the other routes from precache.
-  const offlineContext = await browser.newContext({ viewport: { width: 390, height: 900 } });
+  const offlineContext = await browser.newContext({
+    viewport: { width: 390, height: 900 },
+    hasTouch: true,
+    isMobile: true,
+  });
   contexts.push(offlineContext);
   const offlinePage = await offlineContext.newPage();
   const offlineFailures = [];
@@ -518,7 +523,7 @@ try {
     await offlinePage.goto(url(path));
     await waitForApp(offlinePage, route);
     offlinePhase = "offline-check:" + route;
-    if (route === "traits") await checkTraitAtlas(offlinePage);
+    if (route === "traits") await checkOfflineTraits(offlinePage);
     else if (route !== "requirements") await checkImages(offlinePage);
     await offlinePage.waitForLoadState("networkidle");
   }

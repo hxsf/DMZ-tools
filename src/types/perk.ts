@@ -19,5 +19,5 @@ export type Perk = PerkText &
   (
     | { readonly kind: "minor" }
     | { readonly kind: "major"; readonly tree: PerkTree; readonly row: 3 | 6 | 9 }
-    | { readonly kind: "prestige" }
+    | { readonly kind: "prestige"; readonly tree: PerkTree }
   );

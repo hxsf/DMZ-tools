@@ -1,4 +1,11 @@
+import { catalogEn, catalogZh } from "./perk-catalog";
+import { treeEn, treeZh } from "./perk-tree";
+
 export const perksZh = {
+  ...catalogZh,
+  ...treeZh,
+  displayMode: "树上显示的文字",
+  display: { icon: "仅图标", name: "名字", description: "名字＋简介" },
   myTree: "我的特性树",
   catalog: "全部特性",
   search: "搜索中英文名称或效果",
@@ -7,13 +14,8 @@ export const perksZh = {
   scout: "侦查",
   survivalist: "生存",
   prestige: "巅峰特性",
-  minor: "次要特性",
-  major: "主要特性",
   branchRow: "{{branch}} · 第 {{row}} 格",
   points: "已用 {{used}} / {{max}} 点",
-  markHint: "按游戏进度逐格标记。次要特性填入实际抽到的一项，巅峰特性单独记录。",
-  choose: "选择特性",
-  unfilled: "待标记",
   remove: "移除此项",
   toEnglish: "＊为本站译文 · 查看英文",
   toChinese: "已显示英文 · 返回中文",
@@ -39,6 +41,10 @@ export const perksZh = {
 };
 
 export const perksEn = {
+  ...catalogEn,
+  ...treeEn,
+  displayMode: "Tree labels",
+  display: { icon: "Icons", name: "Names", description: "Names + effects" },
   myTree: "My trait tree",
   catalog: "All traits",
   search: "Search names or effects in English or Chinese",
@@ -47,14 +53,8 @@ export const perksEn = {
   scout: "Scout",
   survivalist: "Survivalist",
   prestige: "Prestige traits",
-  minor: "Minor traits",
-  major: "Major traits",
   branchRow: "{{branch}} · Slot {{row}}",
   points: "{{used}} / {{max}} points used",
-  markHint:
-    "Record each slot in order. Select the minor trait you rolled. Prestige traits are tracked separately.",
-  choose: "Choose a trait",
-  unfilled: "Unmarked",
   remove: "Remove this trait",
   toEnglish: "＊ Project translation · Show English",
   toChinese: "Showing English · Return to Chinese",
