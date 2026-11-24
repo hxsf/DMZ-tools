@@ -103,7 +103,13 @@ async function showMode(page, mode) {
   assert.equal(await page.locator("#traits-tree").getAttribute("data-mode"), mode);
 }
 
-async function choose(page, branch, row, { query, id, count, position } = {}) {
+function nodeAt(page, branch, row, position) {
+  return page.locator(
+    `.perk-branch-diagram[data-branch="${branch}"] .perk-tier[data-row="${row}"] .perk-node[data-position="${position}"]`,
+  );
+}
+
+async function choose(page, branch, row, { query, id, count, position, recordOnly = false } = {}) {
   if (branch !== "prestige" && row % 3 === 0) {
     const options = page.locator(
       '.perk-branch-diagram[data-branch="' +
@@ -122,20 +128,14 @@ async function choose(page, branch, row, { query, id, count, position } = {}) {
     return value;
   }
   const target =
-    position === undefined
-      ? slot(page, branch, row)
-      : page.locator(
-          '.perk-branch-diagram[data-branch="' +
-            branch +
-            '"] .perk-tier[data-row="' +
-            row +
-            '"] .perk-node[data-position="' +
-            position +
-            '"]',
-        );
+    position === undefined ? slot(page, branch, row) : nodeAt(page, branch, row, position);
   await target.click();
   const picker = page.locator("dialog.trait-picker[open]");
   await picker.waitFor();
+  const mode = picker.locator(
+    recordOnly ? '[data-pick-mode="record"]' : '[data-pick-mode="activate"]',
+  );
+  if (await mode.isVisible()) await mode.click();
   if (query) await picker.locator("#trait-picker-search").fill(query);
   const choices = picker.locator(".perk-choice[data-wire-id]:enabled");
   if (count) assert.equal(await choices.count(), count);
@@ -145,8 +145,9 @@ async function choose(page, branch, row, { query, id, count, position } = {}) {
   assert.ok(value > 0);
   await choice.click();
   await picker.waitFor({ state: "hidden" });
-  assert.equal(await slot(page, branch, row).getAttribute("data-selected"), "true");
-  assert.equal(Number(await slot(page, branch, row).getAttribute("data-wire-id")), value);
+  const picked = recordOnly ? target : slot(page, branch, row);
+  assert.equal(await picked.getAttribute("data-selected"), String(!recordOnly));
+  assert.equal(Number(await picked.getAttribute("data-wire-id")), value);
   return value;
 }
 
@@ -198,6 +199,115 @@ async function assertBoardFits(page, firstFold) {
       JSON.stringify(geometry),
     );
   }
+}
+
+async function checkNodeTooltip(page, outputDirectory, label) {
+  const tree = page.locator(".perk-tree-board");
+  const node = tree
+    .locator('.perk-branch-diagram[data-branch="warfighter"] .perk-tier[data-row="9"] .perk-node')
+    .first();
+  const mark = node.locator(".perk-node-mark");
+  const tip = page.locator("#trait-node-tooltip[role=tooltip]");
+  const anchor = await mark.boundingBox();
+  await mark.hover();
+  await tip.waitFor();
+  assert.equal(await node.getAttribute("aria-describedby"), "trait-node-tooltip");
+  const rect = await tip.boundingBox();
+  const viewport = page.viewportSize();
+  assert.ok(
+    rect.x >= 0 &&
+      rect.y >= 0 &&
+      rect.x + rect.width <= viewport.width + 1 &&
+      rect.y + rect.height <= viewport.height + 1,
+    "The full tooltip fits near the edge.",
+  );
+  assert.deepEqual(
+    await mark.boundingBox(),
+    anchor,
+    "Opening a floating tooltip cannot move the tree.",
+  );
+  assert.ok(
+    (await tip.innerText()).trim().split(/\s+/u).length >= 2,
+    "The tooltip contains the trait's name and effect.",
+  );
+  await shot(page, outputDirectory, label, "tooltip-1440");
+  const hover = await node.evaluate((el) => [
+    getComputedStyle(el).backgroundColor,
+    getComputedStyle(el.querySelector(".perk-node-mark")).clipPath,
+  ]);
+  assert.equal(hover[0], "rgba(0, 0, 0, 0)");
+  assert.ok(hover[1].startsWith("polygon("), "The warfighter highlight retains its hexagon.");
+  assert.equal(
+    await mark.evaluate((el) => getComputedStyle(el, "::before").top),
+    "3px",
+    "Hover draws the ring inside the glyph boundary.",
+  );
+  await page.keyboard.press("Escape");
+  await tip.waitFor({ state: "hidden" });
+  await page.mouse.move(1, 1);
+  await showMode(page, "name");
+  await node.locator(".perk-node-name").hover();
+  await tip.waitFor();
+  assert.equal(
+    await node.getAttribute("aria-describedby"),
+    "trait-node-tooltip",
+    "Hovering the name also shows details.",
+  );
+  await page.mouse.move(1, 1);
+  await tip.waitFor({ state: "hidden" });
+  await page.locator('[data-tree-mode="name"]').focus();
+  await page.keyboard.press("Tab");
+  await node.focus();
+  await tip.waitFor();
+  assert.equal(await node.getAttribute("aria-describedby"), "trait-node-tooltip");
+  assert.deepEqual(await tip.evaluate((el) => getComputedStyle(el).position), "fixed");
+  await page.locator('[data-tree-mode="name"]').focus();
+  await tip.waitFor({ state: "hidden" });
+  await showMode(page, "description");
+  await mark.hover();
+  assert.equal(await tip.count(), 0, "The full description mode already shows the effect.");
+  await page.mouse.move(1, 1);
+  await showMode(page, "icon");
+}
+
+async function checkLabelAlignment(page, outputDirectory, label, width) {
+  for (const mode of ["name", "description"]) {
+    await showMode(page, mode);
+    await topOfBoard(page);
+    const layout = await page.locator(".perk-tree-board").evaluate((board) => {
+      const rowTops = new Map();
+      for (const tier of board.querySelectorAll(".perk-branch-diagram .perk-tier")) {
+        const glyphs = [...tier.querySelectorAll(".perk-node-mark")].map(
+          (glyph) => glyph.getBoundingClientRect().top,
+        );
+        rowTops.set(tier.dataset.row, [...(rowTops.get(tier.dataset.row) ?? []), ...glyphs]);
+      }
+      return {
+        width: board.getBoundingClientRect().width,
+        height: board.getBoundingClientRect().height,
+        bottom: board.getBoundingClientRect().bottom,
+        rowSpread: [...rowTops.values()].map((ys) => Math.max(...ys) - Math.min(...ys)),
+      };
+    });
+    assert.equal(layout.rowSpread.length, 9);
+    assert.ok(
+      layout.rowSpread.every((dy) => dy <= 1),
+      JSON.stringify({ mode, width, layout }),
+    );
+    if (width === 1920) {
+      assert.ok(layout.width > 1800);
+      assert.ok(
+        layout.bottom <= 1081,
+        "The tested 18-point build fits a 1080p desktop: " + JSON.stringify(layout),
+      );
+    }
+    await assertBoardFits(page, false);
+    if (mode === "description") {
+      console.log(JSON.stringify({ check: "trait-label-alignment", viewport: width, ...layout }));
+      await shot(page, outputDirectory, label, "alignment-" + width);
+    }
+  }
+  await showMode(page, "icon");
 }
 
 async function checkCatalog(page, outputDirectory, label) {
@@ -276,6 +386,23 @@ async function checkCatalog(page, outputDirectory, label) {
     0,
     "Verified official text has no translation mark.",
   );
+  assert.match(await entries.locator("h3 a").getAttribute("href"), /callofduty\.com\/cn\/zh\//);
+  await search.fill("假死");
+  assert.ok(
+    await catalog.locator('[data-perk-id="53"]').isVisible(),
+    "An alternate name finds the current trait.",
+  );
+  await search.fill("战斗扫描仪");
+  const communityName = catalog.locator('[data-perk-id="9"] h3');
+  assert.equal(
+    await communityName.locator(".perk-mark").count(),
+    1,
+    "Community wording keeps its translation marker.",
+  );
+  assert.ok(
+    await communityName.locator("a[href]").isVisible(),
+    "The community wording links to its evidence.",
+  );
   await search.fill("");
   await catalog.evaluate((element) => {
     element.scrollIntoView({ block: "start" });
@@ -329,11 +456,32 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
       "Trees grow upward from row 1.",
     );
   }
-  assert.ok(await slot(page, "warfighter", 2).isDisabled());
+  assert.ok(
+    await slot(page, "warfighter", 2).isEnabled(),
+    "Unconnected random slots accept observed offers.",
+  );
+  const pickerDialog = page.locator("dialog.trait-picker[open]");
+  const farSlot = nodeAt(page, "survivalist", 8, 0);
+  await choose(page, "survivalist", 8, { id: 48, position: 0, recordOnly: true });
+  await farSlot.click();
+  assert.equal(
+    await pickerDialog.locator("#trait-roll-activate:enabled").count(),
+    0,
+    "An unconnected offer cannot spend points.",
+  );
+  await page.keyboard.press("Escape");
+  await slot(page, "scout", 1).click();
+  assert.ok(await pickerDialog.locator('.perk-choice[data-wire-id="48"]').isDisabled());
+  await page.keyboard.press("Escape");
+  await farSlot.click();
+  await pickerDialog.locator("#trait-roll-clear").click();
+  await pickerDialog.waitFor({ state: "hidden" });
+  assert.equal(await farSlot.getAttribute("data-wire-id"), null);
   await assertNavFits(page);
   await topOfBoard(page);
   await assertBoardFits(page, true);
   await shot(page, outputDirectory, label, "empty-1440");
+  await checkNodeTooltip(page, outputDirectory, label);
   const atlas = await checkTraitAtlas(page);
   await checkCatalog(page, outputDirectory, label);
 
@@ -363,7 +511,28 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
   const minor = slot(page, "warfighter", 2);
   assert.equal(await minor.getAttribute("data-position"), "1");
   await share.locator("summary").click();
-  await choose(page, "warfighter", 2, { id: 4, position: 2 });
+  await choose(page, "warfighter", 2, { id: 7, position: 2, recordOnly: true });
+  assert.equal(
+    await minor.getAttribute("data-position"),
+    "1",
+    "Recording an alternative leaves the active route in place.",
+  );
+  const right = nodeAt(page, "warfighter", 2, 2);
+  await right.click();
+  assert.ok(
+    await pickerDialog.locator('.perk-choice[data-wire-id="4"]').isDisabled(),
+    "The current route already uses this trait.",
+  );
+  assert.ok(
+    await pickerDialog.locator('.perk-choice[data-wire-id="7"]').isDisabled(),
+    "This slot already records this trait.",
+  );
+  await pickerDialog.locator("#trait-roll-activate").click();
+  await pickerDialog.waitFor({ state: "hidden" });
+  const centre = nodeAt(page, "warfighter", 2, 1);
+  assert.equal(await centre.getAttribute("data-recorded"), "true");
+  assert.equal(await centre.getAttribute("data-selected"), "false");
+  assert.equal(await centre.getAttribute("data-wire-id"), "4");
   assert.equal(await minor.getAttribute("data-position"), "2");
   await share.locator("summary").click();
   const code = await exported.inputValue();
@@ -378,7 +547,7 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
     code,
   );
   await share.locator("summary").click();
-  await choose(page, "warfighter", 2, { id: 4, position: 0 });
+  await choose(page, "warfighter", 2, { id: 8, position: 0 });
   assert.equal(await minor.getAttribute("data-position"), "0");
   await choose(page, "scout", 1);
   await share.locator("summary").click();
@@ -406,6 +575,12 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
     { key: dataKey, first },
   );
   assert.equal(await minor.getAttribute("data-position"), "2", "Import restores the clicked lane.");
+  assert.equal(
+    await centre.getAttribute("data-wire-id"),
+    "4",
+    "A share code restores the unchosen candidate.",
+  );
+  assert.equal(await nodeAt(page, "warfighter", 2, 0).getAttribute("data-wire-id"), null);
   const restored = await readSave();
   assert.deepEqual(restored.unlocks, existing.unlocks);
   assert.deepEqual(restored.plans, existing.plans);
@@ -417,6 +592,11 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
     await minor.getAttribute("data-position"),
     "2",
     "Reload preserves the clicked lane.",
+  );
+  assert.equal(
+    await centre.getAttribute("data-recorded"),
+    "true",
+    "Reload restores the unchosen candidate.",
   );
   if (!(await share.evaluate((el) => el.open))) await share.locator("summary").click();
   assert.equal(await exported.inputValue(), code);
@@ -442,7 +622,20 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
   ]) {
     for (let row = start; row <= end; row++) await choose(page, branch, row);
   }
-  assert.ok(await slot(page, "scout", 7).isDisabled(), "Ordinary slots cap at 18 points.");
+  await choose(page, "survivalist", 8, { id: 48, position: 0, recordOnly: true });
+  await farSlot.click();
+  assert.equal(await pickerDialog.locator("#trait-roll-activate:enabled").count(), 0);
+  await page.keyboard.press("Escape");
+  const capped = nodeAt(page, "scout", 7, 0);
+  await capped.click();
+  assert.equal(
+    await pickerDialog.locator('[data-pick-mode="activate"]:enabled').count(),
+    0,
+    "Recording at the point limit cannot activate a new tier.",
+  );
+  await page.keyboard.press("Escape");
+  await topOfBoard(page);
+  await shot(page, outputDirectory, label, "recorded-1440");
   await page.waitForFunction(
     (key) => JSON.parse(localStorage.getItem(key))?.perks?.prestige.length === 3,
     dataKey,
@@ -456,18 +649,20 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
   const fullCode = await exported.inputValue();
   assert.match(
     fullCode,
-    /^[\w-]{1,19}$/,
-    "A 9/6/3 build with one offset and 3 Prestige traits fits 19 characters.",
+    /^[\w-]+$/,
+    "All known offers and active choices share a binary Base64URL code.",
   );
   await share.locator("summary").click();
 
-  for (const width of [1440, 768, 390, 320]) {
-    await page.setViewportSize({ width, height: 900 });
+  for (const width of [1920, 1440, 768, 390, 320]) {
+    await page.setViewportSize({ width, height: width === 1920 ? 1080 : 900 });
     await topOfBoard(page);
     await assertNoOverflow(page);
     await assertNavFits(page);
     await assertBoardFits(page, width === 1440);
     if (width === 1440 || width === 320) await shot(page, outputDirectory, label, String(width));
+    if ([1920, 1440, 320].includes(width))
+      await checkLabelAlignment(page, outputDirectory, label, width);
     if (width === 390 || width === 320) {
       for (const mode of ["name", "description"]) {
         await showMode(page, mode);
@@ -504,6 +699,12 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
     dataKey,
   );
   assert.deepEqual((await readSave()).perks, full);
+  assert.equal(
+    await farSlot.getAttribute("data-wire-id"),
+    "48",
+    "Disconnected rolls survive sharing even at the point cap.",
+  );
+  assert.equal(await farSlot.getAttribute("data-selected"), "false");
   await share.locator("summary").click();
   const catalog = page.locator("#traits-catalog");
   await catalog.evaluate((el) => el.scrollIntoView({ block: "start" }));

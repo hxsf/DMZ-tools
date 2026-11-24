@@ -3,9 +3,17 @@ import { setImmediate } from "node:timers/promises";
 import { test } from "node:test";
 import { Err, None, Ok, Some } from "ts-results-es";
 
-const { createAppState, createEmptySnapshot, perks, STORAGE_KEY } = await import(
-  process.env.DMZ_TEST_RUNTIME
-);
+const {
+  activateMinorRoll,
+  createAppState,
+  createEmptySnapshot,
+  decodePerkBuild,
+  encodePerkBuild,
+  getMinorRoll,
+  perks,
+  recordMinorRoll,
+  STORAGE_KEY,
+} = await import(process.env.DMZ_TEST_RUNTIME);
 
 function memoryKV(snapshot) {
   let text = snapshot ? JSON.stringify(snapshot) : undefined;
@@ -285,4 +293,78 @@ test("旧特性树保留未记录的小特性位置，左右位置随各次快�
   const beyondSelectedRows = { ...right, minorPositions: { scout: { 4: 0 } } };
   assert.equal(reopened.stores.perks.replace(beyondSelectedRows).isErr(), true);
   assert.deepEqual(reopened.stores.snapshot().perks, right);
+});
+
+test("旧树可补录未走分支的候选；切换路线后快照和短码都保留原格", async () => {
+  const legacy = createEmptySnapshot();
+  legacy.perks = decodePerkBuild("TYzAexgACw").value;
+  legacy.inventory.items["item:metals"] = 7;
+  const kv = memoryKV(legacy);
+  const writes = [];
+  const app = createAppState({
+    ...kv,
+    async set(key, text) {
+      writes.push(JSON.parse(text).perks);
+      return kv.set(key, text);
+    },
+  });
+  await app.load();
+  const original = app.stores.perks.state.value;
+  assert.deepEqual(original, legacy.perks);
+  assert.equal(kv.calls.writes, 0);
+
+  const future = recordMinorRoll(original, "survivalist", 8, 2, 22).value;
+  const observed = recordMinorRoll(future, "warfighter", 2, 0, 23).value;
+  assert.deepEqual(observed.warfighter, original.warfighter);
+  assert.deepEqual(observed.survivalist, original.survivalist);
+  assert.equal(app.stores.perks.replace(observed).isOk(), true);
+  const first = app.persist();
+
+  const rerouted = activateMinorRoll(observed, "warfighter", 2, 0).value;
+  assert.deepEqual(rerouted.warfighter, [1, 23, 50]);
+  assert.equal(getMinorRoll(rerouted, "warfighter", 2, 1), 48);
+  assert.equal(getMinorRoll(rerouted, "survivalist", 8, 2), 22);
+  assert.equal(app.stores.perks.replace(rerouted).isOk(), true);
+  const second = app.persist();
+  assert.deepEqual(await Promise.all([first, second]), [true, true]);
+  assert.deepEqual(writes, [observed, rerouted]);
+
+  const reopened = createAppState(kv);
+  await reopened.load();
+  assert.deepEqual(reopened.stores.snapshot(), { ...legacy, perks: rerouted });
+  const code = encodePerkBuild(reopened.stores.perks.state.value).value;
+  const destination = createAppState(memoryKV());
+  await destination.load();
+  destination.stores.inventory.setQuantity("item:metals", 99);
+  assert.equal(destination.stores.perks.replace(decodePerkBuild(code).value).isOk(), true);
+  assert.deepEqual(destination.stores.perks.state.value, rerouted);
+  assert.equal(destination.stores.inventory.state.value.items["item:metals"], 99);
+});
+
+test("重复候选、覆盖当前路线或损坏的观测格都不会覆盖已有存档", async () => {
+  const original = createEmptySnapshot();
+  original.perks = { ...original.perks, warfighter: [1], minorRolls: { 47: 22 } };
+  const kv = memoryKV(original);
+  const app = createAppState(kv);
+  await app.load();
+  assert.equal(app.loadStatus.value, "ready");
+
+  for (const minorRolls of [
+    { 47: 22, 46: 22 }, // 两个候选格使用同一个特性
+    { 47: 22, 46: 1 }, // 候选与已走路线重复
+    { 47: 22, 0: 3 }, // 记录到了已启用的格子
+    { 48: 22 }, // 格子越界
+  ]) {
+    const damaged = { ...original, perks: { ...original.perks, minorRolls } };
+    assert.equal(app.stores.perks.replace(damaged.perks).isErr(), true);
+    assert.equal(app.stores.importJson(JSON.stringify(damaged)).status, "invalid");
+    assert.deepEqual(app.stores.snapshot(), original);
+    const damagedKV = memoryKV(damaged);
+    const blocked = createAppState(damagedKV);
+    await blocked.load();
+    assert.equal(blocked.loadIssue.value.value.status, "invalid");
+    assert.equal(await blocked.persist(), false);
+    assert.equal(damagedKV.calls.writes, 0);
+  }
+  assert.equal(kv.calls.writes, 0);
 });

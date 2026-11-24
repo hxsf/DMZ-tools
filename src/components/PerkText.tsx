@@ -22,6 +22,21 @@ export function PerkText({
     name: perk.name.zh || perk.name.en,
   });
   const englishEffect = field === "description" && displayed === "en";
+  const zhSource = field === "name" ? perk.nameZhSource : perk.descriptionZhSource;
+  const effectSource =
+    perk.effectReference ?? (perk.descriptionEnIsExcerpt ? undefined : perk.sourceUrl);
+  const reference = zhSource ?? (field === "description" ? effectSource : undefined);
+  const communityName = field === "name" && !official;
+  const zhReferenceKey = communityName
+    ? "perks.communityNameSource"
+    : field === "name"
+      ? "perks.zhNameSource"
+      : "perks.zhEffectSource";
+  const referenceLabel = zhSource
+    ? t(zhReferenceKey, { name: perk.name.zh })
+    : t(perk.effectReference ? "perks.effectReference" : "perks.fullSource", {
+        name: perk.name.zh,
+      });
   const content = (
     <>
       {englishEffect ? (
@@ -46,26 +61,35 @@ export function PerkText({
           {original ? <Trans t={t} i18nKey="perks.zhMark" /> : "＊"}
         </button>
       )}
+      {displayed === "zh" && reference && (
+        <a
+          class="perk-source-short"
+          href={reference}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={referenceLabel}
+          title={referenceLabel}
+        >
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      {displayed === "zh" && field === "description" && zhSource && perk.effectReference && (
+        <a
+          class="perk-source-short"
+          href={perk.effectReference}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={t("perks.effectReference", { name: perk.name.zh })}
+        >
+          <Trans t={t} i18nKey="perks.effectSupplement" />
+        </a>
+      )}
     </>
   );
   if (field === "name") return content;
   return (
     <>
-      <p>
-        {content}
-        {displayed === "zh" && !perk.descriptionEnIsExcerpt && (
-          <a
-            class="perk-source-short"
-            href={perk.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={t("perks.fullSource", { name: perk.name.zh || perk.name.en })}
-            title={t("perks.fullSource", { name: perk.name.zh || perk.name.en })}
-          >
-            <span aria-hidden="true">↗</span>
-          </a>
-        )}
-      </p>
+      <p>{content}</p>
       {englishEffect && !perk.descriptionEnIsExcerpt && (
         <p>
           <span class="perk-meta">
@@ -79,6 +103,15 @@ export function PerkText({
           <a href={perk.sourceUrl} target="_blank" rel="noreferrer">
             <Trans t={t} i18nKey="perks.source" />
           </a>
+          {perk.effectReference && (
+            <>
+              {" "}
+              ·{" "}
+              <a href={perk.effectReference} target="_blank" rel="noreferrer">
+                <Trans t={t} i18nKey="perks.effectDetails" />
+              </a>
+            </>
+          )}
         </div>
       )}
     </>

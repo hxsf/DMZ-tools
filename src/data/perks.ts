@@ -15,6 +15,11 @@ export const perkSources = {
     "https://www.callofduty.com/cn/zh/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
   launchZh:
     "https://www.callofduty.com/cn/zh/patchnotes/2026/10/call-of-duty-modern-warfare-4-launch-patch-notes",
+  bundlesZh:
+    "https://www.callofduty.com/cn/zh/blog/2026/11/call-of-duty-modern-warfare-4-season-1-battle-pass-blackcell-store-bundles",
+  prestigeChart: "https://gl.ali213.net/html/2026-10/1818905.html",
+  scannerCommunity: "https://gl.ali213.net/html/2026-10/1819337.html",
+  prestigeGuide: "https://dmzmap.com/guides/skill-tree",
 } as const;
 
 // Wire IDs belong to the version 1 share format. Keep them when correcting or reordering records.
@@ -31,6 +36,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: true,
     englishExcerpt: "Killing an enemy resets tactical sprint.",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/adrenaline-burst",
   },
   {
@@ -45,6 +52,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "UAV towers and SAM sites",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/air-superiority",
   },
   {
@@ -81,12 +90,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Auto Fill", zh: "自动填充" },
     description: {
       en: "Your backpack automatically refills your lethal and tactical slots.",
-      zh: "背包中的杀伤型和战术型装备会自动补入对应装备槽。",
+      zh: "背包里的杀伤型装备和战术型装备会自动补入对应槽位。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "replenish from Backpack",
+    nameZhSource: perkSources.seasonOneZh,
     sourceUrl: "https://dmzhub.gg/traits/auto-fill",
   },
   {
@@ -94,7 +104,7 @@ export const perks: readonly Perk[] = [
     kind: "minor",
     name: { en: "Bounty Hunter", zh: "赏金猎人" },
     description: {
-      en: "Claim more cash when you turn in a bounty.",
+      en: "Collecting a bounty grants a larger reward.",
       zh: "领取悬赏时获得更多奖励。",
     },
     nameOfficialZh: false,
@@ -134,15 +144,16 @@ export const perks: readonly Perk[] = [
   {
     wireId: 9,
     kind: "minor",
-    name: { en: "Combat Scanner", zh: "战斗扫描" },
+    name: { en: "Combat Scanner", zh: "战斗扫描仪" },
     description: {
       en: "Downing an enemy player sends one UAV scan from their location.",
-      zh: "击倒敌方玩家时，以其所在位置为中心进行一次无人机扫描。",
+      zh: "击倒敌方玩家时，在对方倒地处触发一次无人机扫描。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "a single UAV pulse",
+    nameZhSource: perkSources.scannerCommunity,
     sourceUrl: "https://dmzhub.gg/traits/combat-scanner",
   },
   {
@@ -151,7 +162,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Combat Scavenger", zh: "战场拾荒者" },
     description: {
       en: "A defeated hostile can occasionally drop a valuable or an ingredient.",
-      zh: "击败敌方士兵时，有小概率获得贵重物品或材料。",
+      zh: "击杀敌方士兵时，对方有小概率掉落一份材料或一件贵重物品。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -165,7 +176,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Consumable Stacker", zh: "消耗品叠效" },
     description: {
       en: "Repeat a still-active consumable to extend its effect, up to twice the normal duration.",
-      zh: "在消耗品仍生效时再次使用，可叠加时长，最多达到原时长的两倍。",
+      zh: "同种消耗品在生效期间再次使用，效果时间可累加至原来的两倍。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -269,6 +280,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "a random Consumable",
+    nameZhSource: perkSources.seasonOneZh,
     sourceUrl: "https://dmzhub.gg/traits/free-prep",
   },
   {
@@ -311,6 +323,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "the amount of cash extracted",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/investor",
   },
   {
@@ -319,7 +333,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Key Cash", zh: "开锁奖金" },
     description: {
       en: "Using a key pays a cash bonus that scales with its rarity.",
-      zh: "使用钥匙开锁可获得现金，钥匙稀有度越高，奖金越多。",
+      zh: "用钥匙打开上锁区域可获得现金。钥匙越稀有，奖金越多。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -346,13 +360,15 @@ export const perks: readonly Perk[] = [
     kind: "minor",
     name: { en: "LT Hunter", zh: "军官猎手" },
     description: {
-      en: "A Lieutenant Tower identifies one more Lieutenant when activated.",
-      zh: "激活军官情报塔时，额外揭示一名军官。",
+      en: "Your squad can reveal one extra Lieutenant by activating a Lieutenant Tower.",
+      zh: "小队成员激活军官信号塔时，会额外标出一名军官。",
     },
-    nameOfficialZh: false,
+    nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "an additional Lieutenant",
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/lt-hunter",
   },
   {
@@ -403,12 +419,14 @@ export const perks: readonly Perk[] = [
     name: { en: "Mini Tracker", zh: "迷你追踪器" },
     description: {
       en: "The first search of a container has a 50% chance to trigger a radar scan. Its radius is smaller on X01.",
-      zh: "首次搜刮容器时，有 50% 概率触发一次雷达扫描。在 X01 的扫描范围较小。",
+      zh: "搜刮尚未被人打开的容器时，有 50% 概率触发一次雷达扫描。X01 的扫描半径较小。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "50% chance",
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/mini-tracker",
   },
   {
@@ -465,6 +483,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "reserve Plate storage by 2",
+    nameZhSource: perkSources.seasonOneZh,
     sourceUrl: "https://dmzhub.gg/traits/plate-organization",
   },
   {
@@ -479,6 +498,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Stacks with Plate Organization.",
+    nameZhSource: perkSources.seasonOneZh,
     sourceUrl: "https://dmzhub.gg/traits/plate-pouch",
   },
   {
@@ -498,29 +518,31 @@ export const perks: readonly Perk[] = [
   {
     wireId: 35,
     kind: "minor",
-    name: { en: "Popcorn Lethals", zh: "杀伤装备回收" },
+    name: { en: "Popcorn Lethals", zh: "杀伤装备掉落" },
     description: {
       en: "Hostiles hit by lethal equipment are more likely to drop lethal equipment.",
-      zh: "受杀伤型装备影响的敌方士兵更容易掉落杀伤型装备。",
+      zh: "敌方士兵受到杀伤型装备影响后，更容易掉落杀伤型装备。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "chance to drop Lethals",
+    nameAliasesZh: ["杀伤装备回收"],
     sourceUrl: "https://dmzhub.gg/traits/popcorn-lethals",
   },
   {
     wireId: 36,
     kind: "minor",
-    name: { en: "Popcorn Tacticals", zh: "战术装备回收" },
+    name: { en: "Popcorn Tacticals", zh: "战术装备掉落" },
     description: {
       en: "Hostiles hit by tactical equipment are more likely to drop tactical equipment.",
-      zh: "受战术型装备影响的敌方士兵更容易掉落战术型装备。",
+      zh: "敌方士兵受到战术型装备影响后，更容易掉落战术型装备。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "chance to drop Tacticals",
+    nameAliasesZh: ["战术装备回收"],
     sourceUrl: "https://dmzhub.gg/traits/popcorn-tacticals",
   },
   {
@@ -529,7 +551,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Quick Knife", zh: "快速出刀" },
     description: {
       en: "Use a knife in place of your weapon's melee bash.",
-      zh: "使用武器近战攻击时，改为挥刀。",
+      zh: "用武器近战时，改用刀攻击。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -613,12 +635,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Resource Management", zh: "资源管理" },
     description: {
       en: "When a printer resource pickup overflows its limit, part also goes to your least-stocked resource.",
-      zh: "拾取打印资源超过容量上限时，部分拾取量会补入当前数量最少的资源。",
+      zh: "拾取打印资源会超出上限时，拾取量的一部分会转入储量最少的资源。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "your lowest count resource",
+    nameZhSource: perkSources.launchZh,
     sourceUrl: "https://dmzhub.gg/traits/resource-management",
   },
   {
@@ -655,7 +678,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Stealthy", zh: "低调行事" },
     description: {
       en: "It takes more kills to draw a Hunt Squad's attention.",
-      zh: "触发追猎小队追击所需的击杀数增加。",
+      zh: "击杀更多敌人后才会引来猎杀小队。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -669,7 +692,7 @@ export const perks: readonly Perk[] = [
     name: { en: "Strong Arm", zh: "强力投掷" },
     description: {
       en: "See your throw trajectory and throw equipment farther.",
-      zh: "投掷装备时能看见轨迹，并提高投掷距离。",
+      zh: "投掷装备的距离更远，并显示预计投掷轨迹。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
@@ -689,6 +712,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "an extra container",
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/supplied-drops",
   },
   {
@@ -699,12 +724,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Equipment Professional", zh: "装备专家" },
     description: {
       en: "Used lethal and tactical equipment recharges over time, up to each slot's capacity.",
-      zh: "用掉的杀伤型和战术型装备会逐渐补充，可恢复到各槽位上限。",
+      zh: "使用杀伤型或战术型装备后，对应槽位会逐渐补充，直至补满。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "max capacity of the slot",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/equipment-professional",
   },
   {
@@ -721,6 +747,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "damage from explosives",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/combat-resistance",
   },
   {
@@ -731,12 +758,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Viper Sense", zh: "蝮蛇感应" },
     description: {
       en: "Thermal sights and AI targeting systems cannot pick you up.",
-      zh: "热成像瞄具和 AI 瞄准系统无法侦测到你。",
+      zh: "热成像瞄具看不到你，AI 瞄准系统也无法锁定你。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "thermal optics and AI targeting",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/viper-sense",
   },
   {
@@ -753,6 +781,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "health regeneration delay",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/quick-fix",
   },
   {
@@ -763,12 +792,15 @@ export const perks: readonly Perk[] = [
     name: { en: "Possum", zh: "殊死抵抗" },
     description: {
       en: "Once per match, self-revive from death into Last Stand at full health. The enemy squad must leave the area or the five-minute failsafe must expire.",
-      zh: "每局可在死亡后自救一次，回到满生命值的殊死抵抗状态。需等击杀你的小队离开附近，或等到五分钟保护计时结束。",
+      zh: "每局一次，阵亡后可自救，满血回到倒地状态。击杀你的小队远离后可用，最迟等到阵亡满 5 分钟。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "once per match",
+    nameAliasesZh: ["假死"],
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/possum",
   },
   {
@@ -785,6 +817,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "one additional item",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/adaptive-restock",
   },
   {
@@ -801,6 +835,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "a Rare printer ingredient",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/hostile-looter",
   },
   {
@@ -817,6 +852,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "extra piece of loot",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/container-looter",
   },
   {
@@ -833,6 +869,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Common printer resources while deployed",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/field-crafting",
   },
   {
@@ -842,13 +879,15 @@ export const perks: readonly Perk[] = [
     row: 6,
     name: { en: "UAV Upgrade", zh: "无人侦察机升级" },
     description: {
-      en: "Your UAVs cover more ground, last longer and provide Advanced UAV detection.",
-      zh: "延长无人侦察机的探测范围与持续时间，并将其升级为尖端无人侦察机。",
+      en: "Your UAVs reach farther, last longer and show enemy facing. This upgrade does not reveal enemies protected by Thermal Padding.",
+      zh: "无人侦察机范围更广、持续更久，能显示敌人朝向。仍无法探测有反侦察的敌人。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "upgrading them to Advanced UAVs",
+    nameZhSource: perkSources.officialZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/uav-upgrade",
   },
   {
@@ -865,6 +904,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: true,
     englishExcerpt: "UAV towers you activate never expire.",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/overwatch",
   },
   {
@@ -874,13 +915,16 @@ export const perks: readonly Perk[] = [
     row: 9,
     name: { en: "Thermal Padding", zh: "反侦察" },
     description: {
-      en: "Normal UAV scans miss you. An Advanced UAV detects you at the standard UAV level.",
-      zh: "普通无人侦察机无法侦测到你，尖端无人侦察机对你的侦测降为普通级别。",
+      en: "UAVs and UAV towers miss you, even with UAV Upgrade. Advanced UAV fire support can still detect you.",
+      zh: "无人侦察机和无人机控制塔无法发现你，即使敌方有无人侦察机升级。尖端侦察机火力支援仍能发现你。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "downgrades Advanced UAVs",
+    nameAliasesZh: ["隔热防护"],
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
     sourceUrl: "https://dmzhub.gg/traits/thermal-padding",
   },
   {
@@ -897,6 +941,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Increases Revive speeds.",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/faster-revive",
   },
   {
@@ -913,6 +959,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Duration Bonus: +100%",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/consumable-duration",
   },
   {
@@ -929,6 +976,7 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: true,
     englishExcerpt: "Releases smoke when downed.",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/impact-smokes",
   },
   {
@@ -945,6 +993,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: true,
     descriptionEnIsExcerpt: true,
     englishExcerpt: "Automatically repairs your first Wound.",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/free-revive",
   },
   {
@@ -955,12 +1005,14 @@ export const perks: readonly Perk[] = [
     name: { en: "Numb the Pain", zh: "麻木痛感" },
     description: {
       en: "Revival grants the effects of Painkillers and Smelling Salts.",
-      zh: "复活时提供镇痛剂和嗅盐效果。",
+      zh: "复苏时附加镇痛剂和嗅盐效果。",
     },
     nameOfficialZh: true,
-    descriptionOfficialZh: true,
+    descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Painkillers and Smelling Salts",
+    nameZhSource: perkSources.officialZh,
+    descriptionZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/numb-the-pain",
   },
   {
@@ -971,12 +1023,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Die Hard", zh: "顽强抵抗" },
     description: {
       en: "In Last Stand you can bleed indefinitely, and moving near an exfil automatically calls it.",
-      zh: "在殊死抵抗状态下不会因流血计时结束而死亡。靠近撤离点时会自动呼叫撤离载具。",
+      zh: "倒地时不会流血致死，爬到撤离点附近会自动呼叫撤离载具。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "infinite bleed out time",
+    nameZhSource: perkSources.officialZh,
     sourceUrl: "https://dmzhub.gg/traits/die-hard",
   },
   {
@@ -985,13 +1038,15 @@ export const perks: readonly Perk[] = [
     tree: "warfighter",
     name: { en: "Adaptive Restock Pro", zh: "强化灵活补给" },
     description: {
-      en: "The bonus loot item from an AI enemy is more likely to be rare.",
+      en: "The extra item dropped by an AI enemy can be of higher rarity.",
       zh: "敌方士兵额外掉落的战利品可有更高稀有度。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "drop rarer additional items",
+    nameZhSource: perkSources.prestigeChart,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/adaptive-restock-pro",
   },
   {
@@ -1001,12 +1056,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Die Hard Pro", zh: "强化顽强抵抗" },
     description: {
       en: "In Last Stand you move faster, bleed indefinitely and automatically call an exfil when close.",
-      zh: "在殊死抵抗状态下移动更快，流血计时无限，靠近撤离点时会自动呼叫撤离载具。",
+      zh: "倒地时爬行更快，也不会流血致死。靠近撤离点会自动呼叫撤离载具。",
     },
-    nameOfficialZh: false,
+    nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "faster movement speed",
+    nameZhSource: perkSources.bundlesZh,
     sourceUrl: "https://dmzhub.gg/traits/die-hard-pro",
   },
   {
@@ -1016,12 +1072,13 @@ export const perks: readonly Perk[] = [
     name: { en: "Field Crafting Pro", zh: "强化前线制作" },
     description: {
       en: "Craft in the field with Common printer resources at half the usual resource cost.",
-      zh: "部署中可用普通打印资源制作物品，每次制作的资源消耗减半。",
+      zh: "部署期间可直接用普通打印材料制作物品，材料消耗减半。",
     },
-    nameOfficialZh: false,
+    nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "of each craft by 50%",
+    nameZhSource: perkSources.bundlesZh,
     sourceUrl: "https://dmzhub.gg/traits/field-crafting-pro",
   },
   {
@@ -1031,12 +1088,14 @@ export const perks: readonly Perk[] = [
     name: { en: "Free Revive Pro", zh: "强化免费复苏" },
     description: {
       en: "The first Wound heals automatically. You can also use a tourniquet while Wounded.",
-      zh: "自动修复第一个伤口，带伤时也可以使用止血带。",
+      zh: "自动治愈首次受伤。也可以在受伤时使用止血带。",
     },
-    nameOfficialZh: false,
-    descriptionOfficialZh: false,
+    nameOfficialZh: true,
+    descriptionOfficialZh: true,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "tourniquet while wounded",
+    nameZhSource: perkSources.bundlesZh,
+    descriptionZhSource: perkSources.bundlesZh,
     sourceUrl: "https://dmzhub.gg/traits/free-revive-pro",
   },
   {
@@ -1052,6 +1111,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "size and duration",
+    nameZhSource: perkSources.seasonOneZh,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/impact-smokes-pro",
   },
   {
@@ -1060,13 +1121,16 @@ export const perks: readonly Perk[] = [
     tree: "survivalist",
     name: { en: "Numb The Pain Pro", zh: "强化麻木痛感" },
     description: {
-      en: "Revival grants Painkiller and Smelling Salts effects.",
-      zh: "复活时获得镇痛剂与嗅盐效果。",
+      en: "On revival, Painkiller and Smelling Salts last longer than with the base trait.",
+      zh: "复苏时附加的镇痛剂和嗅盐效果比普通版持续更久。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Painkiller and Smelling Salts effect",
+    nameZhSource: perkSources.launchZh,
+    effectReference: perkSources.prestigeGuide,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/numb-the-pain-pro",
   },
   {
@@ -1082,6 +1146,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "increases their range",
+    nameZhSource: perkSources.prestigeChart,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/overwatch-pro",
   },
   {
@@ -1090,13 +1156,16 @@ export const perks: readonly Perk[] = [
     tree: "warfighter",
     name: { en: "Possum Pro", zh: "强化殊死抵抗" },
     description: {
-      en: "Self-revive from death into Last Stand once per match, without the tourniquet health penalty.",
-      zh: "每局可在死亡后自救一次，回到殊死抵抗状态，并免除止血带的生命值惩罚。",
+      en: "Once per match, self-revive from death into Last Stand without a tourniquet health penalty. Possum and Possum Pro do not stack.",
+      zh: "每局一次，阵亡后可自救回到倒地状态，且使用止血带不会损失生命值。与普通版的效果不叠加。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "removes the torniquet health penalty",
+    effectReference: perkSources.seasonOne,
+    nameZhSource: perkSources.prestigeChart,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/possum-pro",
   },
   {
@@ -1112,6 +1181,8 @@ export const perks: readonly Perk[] = [
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "Immediately begin health regeneration",
+    nameZhSource: perkSources.prestigeChart,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/quick-fix-pro",
   },
   {
@@ -1120,13 +1191,16 @@ export const perks: readonly Perk[] = [
     tree: "scout",
     name: { en: "Thermal Padding Pro", zh: "强化隔热防护" },
     description: {
-      en: "UAV concealment also extends to a vehicle you occupy.",
-      zh: "反侦察效果也会覆盖你乘坐的载具，使无人侦察机无法侦测到它。",
+      en: "UAV concealment also applies while you ride in a vehicle. Advanced UAV fire support can still detect you.",
+      zh: "乘坐载具时也能避开无人侦察机。尖端侦察机火力支援仍能发现你。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "hide occupied vehicles",
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/thermal-padding-pro",
   },
   {
@@ -1135,13 +1209,16 @@ export const perks: readonly Perk[] = [
     tree: "scout",
     name: { en: "UAV Upgrade Pro", zh: "强化无人侦察机" },
     description: {
-      en: "Upgrade UAVs to Advanced with longer coverage and duration. Your minimap zooms out 1.5×.",
-      zh: "无人侦察机升级为尖端无人侦察机，探测范围和持续时间增加，小地图视野缩放至 1.5 倍。",
+      en: "Your UAVs reach farther, last longer and show enemy facing. Your minimap zooms out 1.5×.",
+      zh: "无人侦察机范围更广、持续更久，能显示敌人朝向。小地图视野拉远至 1.5 倍。",
     },
     nameOfficialZh: true,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "minimap by 1.5x",
+    nameZhSource: perkSources.seasonOneZh,
+    effectReference: perkSources.seasonOne,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/uav-upgrade-pro",
   },
   {
@@ -1151,12 +1228,14 @@ export const perks: readonly Perk[] = [
     name: { en: "Viper Sense Pro", zh: "强化蝮蛇感应" },
     description: {
       en: "Thermal sights and AI targeting cannot detect you. Get a warning when an enemy Operator aims at you.",
-      zh: "热成像瞄具和 AI 瞄准系统无法侦测到你。敌方特遣队员瞄准你时会收到提醒。",
+      zh: "热成像瞄具看不到你，AI 瞄准系统也无法锁定你。敌方特遣队员瞄准你时，你会收到警告。",
     },
     nameOfficialZh: false,
     descriptionOfficialZh: false,
     descriptionEnIsExcerpt: false,
     englishExcerpt: "is aiming at you",
+    nameZhSource: perkSources.prestigeChart,
+    descriptionZhSource: perkSources.prestigeChart,
     sourceUrl: "https://dmzhub.gg/traits/viper-sence-pro",
   },
 ];

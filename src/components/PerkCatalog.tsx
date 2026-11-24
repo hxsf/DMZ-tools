@@ -24,6 +24,7 @@ const entries = perks.map((perk) => ({
   searchable: [
     perk.name.zh,
     perk.name.en,
+    ...(perk.nameAliasesZh ?? []),
     perk.description.zh,
     perk.description.en,
     perk.englishExcerpt,

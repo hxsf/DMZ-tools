@@ -2,10 +2,14 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 const {
+  activateMinorRoll,
+  deactivateMinorRoll,
   decodePerkBuild,
   emptyPerkBuild,
   encodePerkBuild,
   getMinorPosition,
+  getMinorRoll,
+  recordMinorRoll,
   isPerkBuild,
   perks,
   withMinorPosition,
@@ -125,7 +129,7 @@ test("拒绝非法编号、错误主特性分支、断层、重复或超出点�
 });
 
 test("导入拒绝未知版本、无效文本、截断、额外数据和保留位", () => {
-  assert.equal(decodePerkBuild("AwA").error, "unsupported-version");
+  assert.equal(decodePerkBuild("AAA").error, "unsupported-version");
   for (const code of [
     "",
     "AQ",
@@ -136,7 +140,11 @@ test("导入拒绝未知版本、无效文本、截断、额外数据和保留�
     "A+A",
     "A/A",
     "NULL!",
-    "A".repeat(24),
+    "A".repeat(88),
+    "AwA", // V3 至少包含一项随机候选
+    "AwA_AAA", // 64 个候选超出 48 个格子
+    "AwDADwA", // 单一候选的组合序号超出范围
+    "AwAA8AM", // 6 比特序号超过可选的 48 项特性
     "AgA", // V2 不允许全部居中
     "DgDAYA", // 此树仅有一个三选一槽位，三进制值 3 超出范围
     "DgDAIAA", // 左选的 V2 短码后多一个空字节
@@ -215,5 +223,107 @@ test("存档拒绝无效的三选一位置", () => {
     { warfighter: { 2: "0" } },
   ]) {
     assert.equal(isPerkBuild({ ...base, minorPositions }), false);
+  }
+});
+
+test("随机结果可记在任意未启用的层，不消耗点数并在切换路线后保留", () => {
+  let board = emptyPerkBuild();
+  const record = (row, position, id) => {
+    const edit = recordMinorRoll(board, "warfighter", row, position, id);
+    assert.ok(edit.isOk());
+    board = edit.value;
+  };
+  record(8, 2, 48);
+  record(2, 0, 2);
+  record(2, 2, 3);
+  assert.equal(activateMinorRoll(board, "warfighter", 2, 0).isErr(), true);
+  record(1, 0, 1);
+  board = activateMinorRoll(board, "warfighter", 1, 0).value;
+  board = activateMinorRoll(board, "warfighter", 2, 0).value;
+  assert.equal(activateMinorRoll(board, "warfighter", 2, 0).isErr(), true);
+  board = { ...board, warfighter: [...board.warfighter, 49] };
+  board = activateMinorRoll(board, "warfighter", 2, 2).value;
+  assert.deepEqual(board.warfighter, [1, 3, 49]);
+  assert.equal(getMinorPosition(board, "warfighter", 2), 2);
+  assert.equal(getMinorRoll(board, "warfighter", 2, 0), 2);
+  assert.equal(getMinorRoll(board, "warfighter", 8, 2), 48);
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(board).value).value, board);
+  assert.equal(deactivateMinorRoll(board, "warfighter", 2).isErr(), true);
+  board = { ...board, warfighter: [1, 3] };
+  board = deactivateMinorRoll(board, "warfighter", 2).value;
+  assert.deepEqual(board.warfighter, [1]);
+  assert.equal(getMinorRoll(board, "warfighter", 2, 2), 3);
+  assert.equal(board.minorPositions, undefined);
+});
+
+test("全树禁用重复候选和同一操作，移除未启用候选后才可在别处重录", () => {
+  const base = { ...emptyPerkBuild(), warfighter: [1] };
+  const board = recordMinorRoll(base, "scout", 8, 2, 48).value;
+  for (const [branch, row, pos, id] of [
+    ["scout", 1, 0, 1],
+    ["warfighter", 1, 0, 48],
+    ["scout", 2, 0, 48],
+    ["scout", 8, 2, 48],
+    ["warfighter", 1, 0, 1],
+    ["scout", 3, 0, 5],
+    ["scout", 1, 2, 5],
+    ["scout", 2, 0, 49],
+    ["scout", 2, 0, undefined],
+    ["warfighter", 1, 0, undefined],
+  ]) {
+    assert.equal(recordMinorRoll(board, branch, row, pos, id).error, "invalid-build");
+  }
+  const cleared = recordMinorRoll(board, "scout", 8, 2, undefined).value;
+  assert.deepEqual(cleared, base);
+  assert.ok(recordMinorRoll(cleared, "survivalist", 1, 0, 48).isOk());
+  assert.ok(recordMinorRoll(board, "scout", 8, 2, 2).isOk());
+});
+
+test("18 点后仍能标记候选，只有路线加点受限", () => {
+  const board = decodePerkBuild("ZcLAWxgQReOAJJUFbAE").value;
+  const observed = recordMinorRoll(board, "survivalist", 1, 0, 13).value;
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(observed).value).value, observed);
+  assert.ok(activateMinorRoll(observed, "survivalist", 1, 0).isErr());
+});
+
+test("V3 对每个候选数量和全部 48 格使用二进制编码，拒绝截断和非法填充", () => {
+  const board = emptyPerkBuild();
+  const rolls = {};
+  // Two coprime permutations cover all cell/ID positions while varying the subset ranks.
+  for (let i = 0; i < 48; i++) {
+    rolls[(17 * i + 13) % 48] = 1 + ((11 * i + 43) % 48);
+    const build = { ...board, minorRolls: { ...rolls } };
+    const code = encodePerkBuild(build).value;
+    assert.deepEqual(decodePerkBuild(code).value, build);
+    assert.ok(code.length <= 52);
+    const raw = Buffer.from(code, "base64url");
+    assert.ok(decodePerkBuild(raw.subarray(0, -1).toString("base64url")).isErr());
+    assert.ok(
+      decodePerkBuild(Buffer.concat([raw, Buffer.from([0])]).toString("base64url")).isErr(),
+    );
+  }
+  assert.equal(encodePerkBuild({ ...board, minorRolls: { 0: 1 } }).value.length, 7);
+});
+
+test("V3 允许在历史重号路线旁记录新候选，拒绝无效存档候选", () => {
+  const legacy = decodePerkBuild("TYzAexgACw").value;
+  const edit = recordMinorRoll(legacy, "survivalist", 8, 2, 22);
+  assert.ok(edit.isOk());
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(edit.value).value).value, edit.value);
+  assert.ok(recordMinorRoll(legacy, "survivalist", 8, 2, 1).isErr());
+  for (const minorRolls of [
+    null,
+    [],
+    {},
+    { "-1": 2 },
+    { "01": 2 },
+    { 48: 2 },
+    { 1: 1 },
+    { 0: 2 },
+    { 47: 49 },
+    { 46: 13, 47: 13 },
+    { 47: "12" },
+  ]) {
+    assert.equal(isPerkBuild({ ...legacy, minorRolls }), false);
   }
 });

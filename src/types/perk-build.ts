@@ -10,6 +10,8 @@ type OffCenterPositions = Readonly<Partial<Record<number, 0 | 2>>>;
 
 /** Each entry is the stable wire ID of the chosen trait, starting at the bottom row. */
 export type PerkBuild = Readonly<Record<PerkTree | "prestige", readonly number[]>> & {
+  /** Observed rolls outside the active route, keyed by permanent cell number (0–47). */
+  readonly minorRolls?: Readonly<Partial<Record<number, number>>>;
   /** One-based rows. Older builds omit this field and display their random picks in the center. */
   readonly minorPositions?: Readonly<Partial<Record<PerkTree, OffCenterPositions>>>;
 };

@@ -12,6 +12,13 @@ interface PerkText {
   readonly descriptionEnIsExcerpt: boolean;
   /** Short source wording, available offline for the English view. */
   readonly englishExcerpt: string;
+  /** Attested Simplified Chinese text. Community wording can still carry a translation marker. */
+  readonly nameZhSource?: string;
+  readonly descriptionZhSource?: string;
+  /** Documented alternate labels included in searches. */
+  readonly nameAliasesZh?: readonly string[];
+  /** Additional evidence for an effect when the directory excerpt alone is incomplete. */
+  readonly effectReference?: string;
   readonly sourceUrl: string;
 }
 

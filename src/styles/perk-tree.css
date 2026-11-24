@@ -10,7 +10,7 @@
   --mark-size: clamp(29px, 3.15vw, 42px);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(58px, 0.37fr);
-  grid-template-rows: repeat(9, auto) auto;
+  grid-template-rows: repeat(9, auto) max-content;
   column-gap: clamp(5px, 1.2vw, 18px);
   padding: clamp(6px, 1vw, 15px);
   color: #faf9ef;
@@ -99,19 +99,17 @@
   color: #e5e4d9;
   line-height: 1.2;
 }
-.perk-node:disabled {
+.perk-node:is(:disabled, [aria-disabled="true"]) {
   opacity: 1;
   cursor: default;
   color: #c0c0b7;
 }
-.perk-node:not(:disabled):hover,
-.perk-node:not(:disabled):focus-visible {
-  color: white;
-  background: color-mix(in srgb, var(--tint) 22%, transparent);
+.perk-node:hover,
+.perk-node:focus-visible {
+  background: transparent;
 }
 .perk-node:focus-visible {
-  outline-color: white;
-  outline-offset: -2px;
+  outline: none;
 }
 .perk-node-mark {
   position: relative;
@@ -149,11 +147,14 @@
 .perk-node-mark [data-perk-icon] + .perk-node-fallback {
   display: none;
 }
-.perk-node:disabled .perk-node-mark {
+.perk-node:is(:disabled, [aria-disabled="true"]) .perk-node-mark {
   background: #696c67;
 }
-.perk-node:disabled .perk-node-mark > span {
+.perk-node:is(:disabled, [aria-disabled="true"]) .perk-node-mark > span {
   opacity: 0.73;
+}
+.perk-node[data-recorded="true"][data-selected="false"] .perk-node-mark::before {
+  background: color-mix(in srgb, var(--tint) 26%, #202424);
 }
 .perk-node[data-selected="true"] .perk-node-mark {
   background: #fff7d8;
@@ -161,6 +162,29 @@
 .perk-node[data-selected="true"] .perk-node-mark::before {
   inset: 2px;
   background: color-mix(in srgb, var(--tint) 75%, #202323);
+}
+.perk-node:hover .perk-node-mark {
+  background: #fff4c3;
+}
+.perk-node:hover .perk-node-mark::before {
+  inset: 3px;
+}
+.perk-node:focus-visible .perk-node-mark {
+  background: #c1e5ff;
+}
+.perk-node:focus-visible .perk-node-mark::before {
+  inset: 4px;
+}
+@media (forced-colors: active) {
+  .perk-node:hover .perk-node-mark,
+  .perk-node:focus-visible .perk-node-mark {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+  .perk-node:hover .perk-node-mark::before,
+  .perk-node:focus-visible .perk-node-mark::before {
+    background: Canvas;
+  }
 }
 .perk-tier[data-major="true"] .perk-node-mark {
   width: calc(var(--mark-size) * 1.16);
@@ -188,9 +212,6 @@
   height: clamp(8px, 1.1vw, 17px);
   overflow: visible;
   flex: none;
-}
-.perk-tree-board[data-mode="icon"] {
-  grid-template-rows: repeat(9, auto) max-content;
 }
 .perk-tree-board[data-mode="icon"] .perk-tier {
   justify-content: flex-start;
@@ -277,6 +298,69 @@
 .perk-tree-board[data-mode="description"] {
   grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(84px, 0.5fr);
 }
+
+@media (min-width: 721px) {
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier .perk-node {
+    justify-content: flex-start;
+    padding-block-end: 0;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier:not([data-row="1"]) .perk-node::after {
+    content: "";
+    flex: 1 0 0;
+    width: 1px;
+    background: color-mix(in srgb, var(--tint) 32%, #424741);
+  }
+  .perk-tree-board:not([data-mode="icon"])
+    .perk-tier:not([data-row="1"])
+    .perk-node[data-selected="true"]::after {
+    background: var(--tint);
+  }
+}
+
+@media (min-width: 1051px) {
+  .perk-tree-board:not([data-mode="icon"]) {
+    --mark-size: clamp(25px, 2.9svh, 32px);
+    column-gap: clamp(6px, 0.7vw, 14px);
+    padding: 7px;
+  }
+  .perk-tree-board[data-mode="description"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) clamp(92px, 8vw, 180px);
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier .perk-node {
+    gap: 1px;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-tier:first-child {
+    padding-top: 8px;
+  }
+  .perk-tree-board:not([data-mode="icon"]) .perk-branch-links {
+    height: clamp(5px, 0.6svh, 8px);
+  }
+}
+
+.perk-node-tooltip {
+  position: fixed;
+  z-index: 40;
+  width: max-content;
+  max-width: min(340px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 8px 11px;
+  border: 1px solid #65716a;
+  border-radius: 6px;
+  background: #202523;
+  color: #f4f4eb;
+  box-shadow: 0 3px 12px #1018154d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.perk-node-tooltip strong {
+  display: block;
+  color: white;
+}
+.perk-node-tooltip strong + p {
+  margin-top: 2px;
+}
 .trait-picker {
   width: min(calc(100% - 32px), 680px);
   max-height: min(82dvh, 800px);
@@ -309,6 +393,42 @@
   place-items: center;
   min-width: 40px;
   padding: 6px;
+}
+.trait-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.trait-picker-actions button {
+  padding: 5px 10px;
+}
+.trait-current-roll {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.trait-pick-modes {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #e9edf1;
+}
+.trait-pick-modes button {
+  border-color: transparent;
+  background: transparent;
+}
+.trait-pick-modes button[aria-pressed="true"] {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: white;
+}
+.trait-picker-tools {
+  flex-wrap: wrap;
 }
 .trait-picker-tools .catalog-search {
   max-width: none;
@@ -347,6 +467,9 @@
   align-self: center;
   flex-shrink: 0;
   color: var(--blue);
+}
+.trait-pick-card .perk-choice:disabled {
+  color: var(--muted);
 }
 .trait-pick-card .perk-choice::after {
   position: absolute;
