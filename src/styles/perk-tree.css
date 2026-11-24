@@ -7,12 +7,13 @@
   scrollbar-color: #66645a #202221;
 }
 .perk-tree-board {
-  --mark-size: clamp(29px, 3.15vw, 42px);
+  --mark-size: clamp(42px, 3.75vw, 48px);
+  --prominent-size: calc(var(--mark-size) * 1.25);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(58px, 0.37fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(68px, 0.37fr);
   grid-template-rows: repeat(9, auto) max-content;
-  column-gap: clamp(5px, 1.2vw, 18px);
-  padding: clamp(6px, 1vw, 15px);
+  column-gap: clamp(5px, 1vw, 16px);
+  padding: clamp(6px, 0.6vw, 11px);
   color: #faf9ef;
 }
 .perk-branch-diagram,
@@ -59,7 +60,7 @@
   justify-content: flex-end;
 }
 .perk-tier:first-child {
-  padding-top: 19px;
+  padding-top: 12px;
 }
 .perk-tier-choices {
   display: grid;
@@ -86,18 +87,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2px;
   width: 100%;
   min-width: 0;
-  min-height: 36px;
+  min-height: max(44px, var(--mark-size));
   align-self: stretch;
-  padding: 2px;
+  padding: 2px 2px 0;
   border: 0;
   border-radius: 3px;
   background: transparent;
   color: #e5e4d9;
   line-height: 1.2;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 .perk-node:is(:disabled, [aria-disabled="true"]) {
   opacity: 1;
@@ -116,8 +120,8 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: var(--mark-size);
-  height: var(--mark-size);
+  width: var(--node-mark-size, var(--mark-size));
+  height: var(--node-mark-size, var(--mark-size));
   background: color-mix(in srgb, var(--tint) 85%, white);
   clip-path: var(--node-shape);
 }
@@ -134,14 +138,14 @@
   grid-area: 1 / 1;
 }
 .perk-node-mark .perk-icon {
-  width: 66%;
-  height: 66%;
+  width: 70%;
+  height: 70%;
   background-color: transparent;
   border-radius: 0;
 }
 .perk-node-fallback {
   color: inherit;
-  font-size: calc(var(--mark-size) * 0.52);
+  font-size: calc(var(--node-mark-size, var(--mark-size)) * 0.48);
   font-weight: 700;
 }
 .perk-node-mark [data-perk-icon] + .perk-node-fallback {
@@ -186,67 +190,32 @@
     background: Canvas;
   }
 }
-.perk-tier[data-major="true"] .perk-node-mark {
-  width: calc(var(--mark-size) * 1.16);
-  height: calc(var(--mark-size) * 1.16);
-}
-.perk-node-name,
-.perk-node-description {
-  display: block;
-  overflow-wrap: anywhere;
-  width: 100%;
-  text-align: center;
+.perk-tier[data-major="true"] .perk-node,
+.perk-prestige-nodes .perk-node {
+  --node-mark-size: var(--prominent-size);
 }
 .perk-node-name {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
   font-size: 12px;
   font-weight: 650;
-}
-.perk-node-description {
-  font-size: 11px;
-  line-height: 1.38;
-  color: #d1d3cc;
 }
 .perk-branch-links {
   display: block;
   width: 100%;
-  height: clamp(8px, 1.1vw, 17px);
+  height: clamp(5px, 0.95svh, 11px);
   overflow: visible;
   flex: none;
 }
-.perk-tree-board[data-mode="icon"] .perk-tier {
-  justify-content: flex-start;
-  --glyph-size: var(--mark-size);
-}
-.perk-tree-board[data-mode="icon"] .perk-tier[data-major="true"] {
-  --glyph-size: calc(var(--mark-size) * 1.16);
-}
-.perk-tree-board[data-mode="icon"] .perk-tier-choices {
-  flex: none;
-}
-.perk-tree-board[data-mode="icon"] .perk-branch-links {
-  flex: 1 0 auto;
-}
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::before,
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::after {
+.perk-tier:not([data-row="1"]) .perk-node::after {
   content: "";
-  position: absolute;
-  left: calc(50% - 0.5px);
+  flex: 1 0 0;
   width: 1px;
-  height: max(0px, calc((100% - var(--glyph-size)) / 2));
   background: color-mix(in srgb, var(--tint) 32%, #424741);
 }
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::before {
-  top: 0;
-}
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node::after {
-  bottom: 0;
-}
-.perk-tree-board[data-mode="icon"] .perk-tier[data-row="9"] .perk-node::before,
-.perk-tree-board[data-mode="icon"] .perk-tier[data-row="1"] .perk-node::after {
-  display: none;
-}
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node[data-selected="true"]::before,
-.perk-tree-board[data-mode="icon"] .perk-tier .perk-node[data-selected="true"]::after {
+.perk-tier:not([data-row="1"]) .perk-node[data-selected="true"]::after {
   background: var(--tint);
 }
 .perk-branch-links path {
@@ -289,54 +258,9 @@
   flex-direction: column;
   gap: clamp(16px, 4vw, 48px);
 }
-.perk-prestige-nodes .perk-node {
-  min-height: 45px;
-}
 .perk-prestige-diagram .perk-branch-title {
   grid-row: 10;
 }
-.perk-tree-board[data-mode="description"] {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(84px, 0.5fr);
-}
-
-@media (min-width: 721px) {
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier .perk-node {
-    justify-content: flex-start;
-    padding-block-end: 0;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier:not([data-row="1"]) .perk-node::after {
-    content: "";
-    flex: 1 0 0;
-    width: 1px;
-    background: color-mix(in srgb, var(--tint) 32%, #424741);
-  }
-  .perk-tree-board:not([data-mode="icon"])
-    .perk-tier:not([data-row="1"])
-    .perk-node[data-selected="true"]::after {
-    background: var(--tint);
-  }
-}
-
-@media (min-width: 1051px) {
-  .perk-tree-board:not([data-mode="icon"]) {
-    --mark-size: clamp(25px, 2.9svh, 32px);
-    column-gap: clamp(6px, 0.7vw, 14px);
-    padding: 7px;
-  }
-  .perk-tree-board[data-mode="description"] {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) clamp(92px, 8vw, 180px);
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier .perk-node {
-    gap: 1px;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier:first-child {
-    padding-top: 8px;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-branch-links {
-    height: clamp(5px, 0.6svh, 8px);
-  }
-}
-
 .perk-node-tooltip {
   position: fixed;
   z-index: 40;
@@ -405,10 +329,6 @@
 .trait-picker-actions button {
   padding: 5px 10px;
 }
-.trait-current-roll {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
 .trait-pick-modes {
   display: inline-flex;
   flex-wrap: wrap;
@@ -459,10 +379,6 @@
   color: #4f596a;
   font-size: 13px;
 }
-.trait-pick-card[data-selected="true"] {
-  background: #f1f5ff;
-  box-shadow: inset 3px 0 var(--blue);
-}
 .trait-pick-card .perk-choice {
   align-self: center;
   flex-shrink: 0;
@@ -481,65 +397,27 @@
   position: relative;
   z-index: 1;
 }
-.perk-tier-legend,
-.perk-prestige-legend {
-  display: none;
+@media (min-width: 1051px) and (max-height: 940px) {
+  .perk-branch-links {
+    height: 5px;
+  }
+  .perk-tier:first-child {
+    padding-top: 8px;
+  }
+  .perk-branch-title {
+    padding-block: 5px;
+  }
 }
 @media (max-width: 720px) {
   .perk-tree-board {
-    --mark-size: clamp(18px, 4.9vw, 30px);
+    --mark-size: clamp(23px, 6.6vw, 42px);
     padding: 4px;
     column-gap: 3px;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(35px, 0.43fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(38px, 0.45fr);
   }
-  .perk-tree-board[data-mode="description"] {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(35px, 0.43fr);
-  }
-  .perk-node .perk-node-name,
-  .perk-node .perk-node-description {
-    display: none;
-  }
-  .perk-tier-legend,
-  .perk-prestige-legend {
-    display: grid;
-    gap: 5px;
-    align-content: start;
-  }
-  .perk-tier-legend {
-    padding: 2px clamp(2px, 1vw, 6px) 4px;
-  }
-  .perk-prestige-legend {
-    grid-column: 1 / -1;
-    padding: 8px 6px 4px;
-    color: #f6ebcb;
-  }
-  .perk-tier-note {
-    min-width: 0;
-    overflow-wrap: anywhere;
-    font-size: 11px;
-    line-height: 1.35;
-  }
-  .perk-tier-note small {
-    margin-inline-end: 3px;
-    font-size: 10px;
-    color: #c6c8be;
-  }
-  .perk-tier-note .perk-node-name {
-    display: inline;
-    font-size: 11px;
-  }
-  .perk-tier-note .perk-node-description {
-    text-align: start;
-    font-size: 11px;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier {
-    justify-content: flex-start;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-tier-choices {
-    flex: none;
-  }
-  .perk-tree-board:not([data-mode="icon"]) .perk-branch-links {
-    margin-top: auto;
+  .perk-node-name {
+    font-size: clamp(11px, 2.5vw, 12px);
+    line-height: 1.25;
   }
   .perk-branch-diagram[data-branch="warfighter"] {
     clip-path: polygon(0 13px, 8px 0, calc(100% - 8px) 0, 100% 13px, 100% 100%, 0 100%);
@@ -551,8 +429,8 @@
     padding-top: 10px;
   }
   .perk-node {
-    min-height: 30px;
-    padding: 1px;
+    gap: 1px;
+    padding: 1px 1px 0;
   }
   .perk-tier .perk-branch-links {
     height: 7px;

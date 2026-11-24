@@ -16,6 +16,52 @@ export function emptyPerkBuild(): PerkBuild {
   return { warfighter: [], scout: [], survivalist: [], prestige: [] };
 }
 
+/** Physical Prestige slots are numbered 1 to 3, including empty slots. */
+export function getPrestigeSlot(build: PerkBuild, row: number): number | undefined {
+  const index = build.prestigeSlots?.indexOf(row) ?? row - 1;
+  return build.prestige[index];
+}
+
+export function setPrestigeSlot(
+  build: PerkBuild,
+  row: number,
+  wireId: number | undefined,
+): BuildEdit {
+  if (
+    !Number.isInteger(row) ||
+    row < 1 ||
+    row > maxPrestigeSlots ||
+    getPrestigeSlot(build, row) === wireId
+  ) {
+    return Err("invalid-build");
+  }
+  const { first, count } = slot("prestige", 0);
+  if (
+    wireId !== undefined &&
+    (!Number.isInteger(wireId) ||
+      wireId < first ||
+      wireId >= first + count ||
+      build.prestige.includes(wireId))
+  ) {
+    return Err("invalid-build");
+  }
+  const prestige: number[] = [];
+  const positions: number[] = [];
+  for (let position = 1; position <= maxPrestigeSlots; position++) {
+    const id = position === row ? wireId : getPrestigeSlot(build, position);
+    if (id !== undefined) {
+      positions.push(position);
+      prestige.push(id);
+    }
+  }
+  const next = { ...build, prestige };
+  if (positions.length && positions[positions.length - 1] > positions.length) {
+    return Ok({ ...next, prestigeSlots: positions });
+  }
+  delete next.prestigeSlots;
+  return Ok(next);
+}
+
 const threeChoiceRows = [2, 4, 5, 7, 8];
 
 export function getMinorPosition(build: PerkBuild, tree: PerkTree, row: number): MinorPosition {
@@ -237,6 +283,29 @@ function validPositions(value: unknown, depth: number): boolean {
   );
 }
 
+function validPrestigeSlots(positions: unknown, count: number): boolean {
+  if (positions === undefined) return true;
+  if (
+    !Array.isArray(positions) ||
+    positions.length !== count ||
+    count < 1 ||
+    count >= maxPrestigeSlots
+  )
+    return false;
+  let previous = 0;
+  for (const position of positions) {
+    if (
+      typeof position !== "number" ||
+      !Number.isInteger(position) ||
+      position <= previous ||
+      position > maxPrestigeSlots
+    )
+      return false;
+    previous = position;
+  }
+  return previous > count;
+}
+
 export function isPerkBuild(value: unknown): value is PerkBuild {
   if (!isRecord(value)) return false;
   const positions = value.minorPositions;
@@ -258,7 +327,9 @@ export function isPerkBuild(value: unknown): value is PerkBuild {
         return false;
       }
     }
-    if (track !== "prestige") {
+    if (track === "prestige") {
+      if (!validPrestigeSlots(value.prestigeSlots, ids.length)) return false;
+    } else {
       if (
         positions &&
         Object.hasOwn(positions, track) &&
@@ -367,6 +438,14 @@ export function encodePerkBuild(build: PerkBuild): Result<string, "invalid-build
   }
   const positions = packPositions(build);
   const version = build.minorRolls ? 3 : positions === 0 ? 1 : 2;
+  // V4 sparse Prestige prefix: escape 00, extension 01, then one layout bit.
+  // With one trait the two sparse layouts are [2] / [3]; with two, [1,3] / [2,3].
+  // The original V1–V3 payload follows, keeping contiguous builds byte-identical.
+  if (build.prestigeSlots) {
+    write(4, 4);
+    const firstSparsePosition = build.prestige.length === 1 ? 2 : 1;
+    write(build.prestigeSlots[0] - firstSparsePosition, 1);
+  }
   write(version, 2);
   for (const track of tracks) write(build[track].length, track === "prestige" ? 2 : 4);
   for (const track of tracks) {
@@ -413,9 +492,15 @@ export function decodePerkBuild(
     length += width;
     return value;
   }
-  const version = read(2);
-  if (version === 0) return Err("unsupported-version");
-  if (version < 3 && code.length > 23) return Err("invalid-code");
+  let version = read(2);
+  let sparseLayout: number | undefined;
+  if (version === 0) {
+    if (read(2) !== 1) return Err("unsupported-version");
+    sparseLayout = read(1);
+    version = read(2);
+    if (version === 0) return Err("unsupported-version");
+  }
+  if (sparseLayout === undefined && version < 3 && code.length > 23) return Err("invalid-code");
   const depths = tracks.map((track) => read(track === "prestige" ? 2 : 4));
   const [warfighter, scout, survivalist, prestige] = tracks.map((track, trackIndex) =>
     Array.from({ length: depths[trackIndex] }, (_, index) => {
@@ -424,6 +509,11 @@ export function decodePerkBuild(
     }),
   );
   let build: PerkBuild = { warfighter, scout, survivalist, prestige };
+  if (sparseLayout !== undefined) {
+    if (prestige.length !== 1 && prestige.length !== 2) return Err("invalid-code");
+    const prestigeSlots = prestige.length === 1 ? [2 + sparseLayout] : [1 + sparseLayout, 3];
+    build = { ...build, prestigeSlots };
+  }
   if (!isPerkBuild(build)) return Err("invalid-code");
   if (version === 2 || version === 3) {
     const slots = [...chosenMinorSlots(build)];

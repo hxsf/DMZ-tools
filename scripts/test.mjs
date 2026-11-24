@@ -14,6 +14,7 @@ try {
     [
       "src/kv.ts",
       "src/perk-code.ts",
+      "src/perk-tree-actions.ts",
       "src/data/perks.ts",
       "src/storage.ts",
       "src/stores/index.ts",

@@ -1,0 +1,122 @@
+.perk-active-build {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 clamp(8px, 1vw, 18px);
+}
+.perk-active-column {
+  --branch-color: #ae5557;
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  align-content: start;
+  min-width: 0;
+}
+.perk-active-column[data-branch="scout"] {
+  --branch-color: #a2812d;
+}
+.perk-active-column[data-branch="survivalist"] {
+  --branch-color: #388d90;
+}
+.perk-active-prestige,
+.perk-active-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-content: start;
+  align-items: start;
+  column-gap: clamp(8px, 0.7vw, 14px);
+  padding: 9px 12px;
+  overflow-wrap: anywhere;
+}
+.perk-active-prestige {
+  row-gap: 5px;
+  background: #fbf8ef;
+  border: 1px solid #e1d5b4;
+  border-top: 3px solid #b09759;
+  border-radius: 6px;
+}
+.perk-active-slot-label {
+  grid-column: 1 / -1;
+  color: #765c22;
+  font-size: 12px;
+  font-weight: 650;
+}
+.perk-active-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-inline-start: 3px solid var(--branch-color);
+  font-size: 15px;
+}
+.perk-active-heading small,
+.perk-active-category,
+.perk-active-empty {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.perk-active-rows {
+  list-style: none;
+  align-self: start;
+  margin: 5px 0 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: white;
+}
+.perk-active-row + .perk-active-row {
+  border-top: 1px solid var(--border);
+}
+.perk-active-identity {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.perk-active-name {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.perk-active-category {
+  display: block;
+  line-height: 1.35;
+}
+.perk-active-identity .perk-icon,
+.perk-active-identity .perk-art-missing {
+  width: 28px;
+  height: 28px;
+}
+.perk-active-row[data-kind="major"] .perk-icon,
+.perk-active-prestige .perk-icon {
+  width: 36px;
+  height: 36px;
+}
+.perk-active-effect {
+  min-width: 0;
+  color: #445064;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.perk-active-empty {
+  align-self: start;
+  margin-top: 6px;
+  padding-inline: 12px;
+}
+@media (max-width: 900px) {
+  .perk-active-build {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .perk-active-column {
+    display: block;
+    grid-row: auto;
+  }
+  .perk-active-prestige,
+  .perk-active-row {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    padding: 8px;
+    column-gap: 8px;
+  }
+}

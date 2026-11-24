@@ -4,7 +4,8 @@ import { Err, Ok, type Result } from "ts-results-es";
 import { perks, type Perk } from "../data/perks";
 import {
   activateMinorRoll,
-  deactivateMinorRoll,
+  getPrestigeSlot,
+  setPrestigeSlot,
   getMinorRoll,
   isPerkBuild,
   recordMinorRoll,
@@ -18,24 +19,24 @@ import {
   type PerkBuild,
   type PerkTree as Branch,
 } from "../types/perk-build";
+import { clearPerkSlot } from "../perk-tree-actions";
+import { useNodeClear } from "./useNodeClear";
 import { Icon } from "./Icon";
 import { PerkIcon } from "./PerkIcon";
 import { PerkText, type TextLanguage } from "./PerkText";
 import { PerkNodeTooltip } from "./PerkNodeTooltip";
 import "../styles/perk-tree.css";
 
-export type TreeMode = "icon" | "name" | "description";
 type Track = Branch | "prestige";
 type Slot = { track: Track; row: number; position?: MinorPosition };
 type Change = Result<PerkBuild, "invalid-build">;
-type Edit = "recordRoll" | "activateSlot" | "deactivateSlot" | "clearRoll";
+type Edit = "recordRoll" | "activateSlot" | "clearNode";
 type Apply = (change: Change, slot: Slot, edit: Edit, perk?: Perk) => void;
 
 interface TreeProps {
   build: PerkBuild;
   editable: boolean;
   language: TextLanguage;
-  mode: TreeMode;
   onChange: (build: PerkBuild) => Promise<boolean>;
 }
 
@@ -44,13 +45,11 @@ const byId = new Map<number, Perk>(perks.map((perk) => [perk.wireId, perk]));
 const widths = [1, 3, 2, 3, 3, 2, 3, 3, 2] as const;
 const rows = Array.from({ length: maxBranchDepth }, (_, index) => maxBranchDepth - index);
 
-function fixedChoice(build: PerkBuild, { track, row }: Slot, perk?: Perk): Change {
-  const entries = [...build[track]];
-  if (entries[row - 1] === perk?.wireId) return Err("invalid-build");
-  if (perk) entries[row - 1] = perk.wireId;
-  else if (track === "prestige" || row === entries.length) entries.splice(row - 1, 1);
-  else return Err("invalid-build");
-  const next = { ...build, [track]: entries };
+function activateMajor(build: PerkBuild, tree: Branch, row: number, perk: Perk): Change {
+  const entries = [...build[tree]];
+  if (entries[row - 1] === perk.wireId) return Err("invalid-build");
+  entries[row - 1] = perk.wireId;
+  const next = { ...build, [tree]: entries };
   return isPerkBuild(next) ? Ok(next) : Err("invalid-build");
 }
 
@@ -76,13 +75,7 @@ function optionsFor({ track, row }: Slot): readonly Perk[] {
   return perks.filter((perk) => perk.kind === "major" && perk.tree === track && perk.row === row);
 }
 
-function positionKey(count: number, index: number) {
-  return index === 0
-    ? "perks.treeLeft"
-    : index === count - 1
-      ? "perks.treeRight"
-      : "perks.treeCenter";
-}
+const positionKeys = ["perks.treeLeft", "perks.treeCenter", "perks.treeRight"] as const;
 
 function Picker({
   slot,
@@ -103,18 +96,9 @@ function Picker({
   const [query, setQuery] = useState("");
   const dialog = useRef<HTMLDialogElement>(null);
   const { track, row } = slot;
-  const roll =
-    track !== "prestige" && row % 3 !== 0
-      ? { tree: track, position: slot.position ?? 0 }
-      : undefined;
-  const activeId = build[track][row - 1];
-  const currentId = roll ? getMinorRoll(build, roll.tree, row, roll.position) : activeId;
-  const current = currentId === undefined ? undefined : byId.get(currentId);
-  const active = currentId !== undefined && currentId === activeId;
-  const canRemove = active && (track === "prestige" || row === build[track].length);
-  const canChooseMode = !!roll && currentId === undefined && routeAvailable;
-  // Opening an alternative next to an active node starts in record-only mode.
-  const [alsoActivate, setAlsoActivate] = useState(canChooseMode && activeId === undefined);
+  const roll = track === "prestige" ? undefined : { tree: track, position: slot.position ?? 0 };
+  const canChooseMode = !!roll && routeAvailable;
+  const [alsoActivate, setAlsoActivate] = useState(canChooseMode);
   const namedSlot = t("perks.branchRow", { branch: t("perks." + track), row });
   const showPosition = roll && widths[row - 1] === 3 && slot.position !== undefined;
   const needle = query.trim().toLowerCase();
@@ -129,7 +113,7 @@ function Picker({
     ].some((text) => text.toLowerCase().includes(needle)),
   );
   function choice(perk: Perk): Change {
-    if (!roll) return fixedChoice(build, slot, perk);
+    if (!roll) return setPrestigeSlot(build, row, perk.wireId);
     const recorded = recordMinorRoll(build, roll.tree, row, roll.position, perk.wireId);
     return canChooseMode && alsoActivate
       ? recorded.andThen((next) => activateMinorRoll(next, roll.tree, row, roll.position))
@@ -176,7 +160,7 @@ function Picker({
             <Trans
               t={t}
               i18nKey="perks.treeSlotPosition"
-              values={{ slot: namedSlot, position: t(positionKey(3, slot.position)) }}
+              values={{ slot: namedSlot, position: t(positionKeys[slot.position]) }}
             />
           ) : (
             namedSlot
@@ -186,81 +170,24 @@ function Picker({
           <Icon name="x" />
         </button>
       </header>
-      {(canChooseMode || current) && (
+      {canChooseMode && (
         <div class="trait-picker-actions">
-          {canChooseMode && (
-            <div class="trait-pick-modes" role="group" aria-label={t("perks.rollAction")}>
-              {(["record", "activate"] as const).map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  data-pick-mode={value}
-                  aria-pressed={(value === "activate") === alsoActivate}
-                  onClick={() => setAlsoActivate(value === "activate")}
-                >
-                  <Trans
-                    t={t}
-                    i18nKey={value === "record" ? "perks.recordOnly" : "perks.recordAndActivate"}
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-          {current && (
-            <strong class="trait-current-roll">
-              <Trans
-                t={t}
-                i18nKey={active ? "perks.activeNamed" : "perks.offeredNamed"}
-                values={{ name: nameFor(current, language) }}
-              />
-            </strong>
-          )}
-          {roll && current && !active && routeAvailable && (
-            <button
-              type="button"
-              id="trait-roll-activate"
-              onClick={() =>
-                onApply(
-                  activateMinorRoll(build, roll.tree, row, roll.position),
-                  slot,
-                  "activateSlot",
-                  current,
-                )
-              }
-            >
-              <Trans t={t} i18nKey="perks.activateHere" />
-            </button>
-          )}
-          {canRemove && (
-            <button
-              type="button"
-              id="trait-slot-remove"
-              onClick={() =>
-                onApply(
-                  roll ? deactivateMinorRoll(build, roll.tree, row) : fixedChoice(build, slot),
-                  slot,
-                  "deactivateSlot",
-                )
-              }
-            >
-              <Trans t={t} i18nKey="perks.deactivateHere" />
-            </button>
-          )}
-          {roll && current && !active && (
-            <button
-              type="button"
-              id="trait-roll-clear"
-              onClick={() =>
-                onApply(
-                  recordMinorRoll(build, roll.tree, row, roll.position, undefined),
-                  slot,
-                  "clearRoll",
-                )
-              }
-            >
-              <Trans t={t} i18nKey="perks.clearHere" />
-            </button>
-          )}
+          <div class="trait-pick-modes" role="group" aria-label={t("perks.rollAction")}>
+            {(["record", "activate"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                data-pick-mode={value}
+                aria-pressed={(value === "activate") === alsoActivate}
+                onClick={() => setAlsoActivate(value === "activate")}
+              >
+                <Trans
+                  t={t}
+                  i18nKey={value === "record" ? "perks.recordOnly" : "perks.recordAndActivate"}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       )}
       <div class="trait-picker-tools">
@@ -279,20 +206,13 @@ function Picker({
       <div class="trait-picker-list">
         {candidates.map((perk) => {
           const change = choice(perk);
-          const here = currentId === perk.wireId;
-          const label = here
-            ? active
-              ? "perks.treeSelected"
-              : "perks.alreadyRecorded"
-            : change.isErr()
-              ? "perks.usedElsewhere"
-              : !roll || (canChooseMode && alsoActivate)
-                ? "perks.treeUse"
-                : active
-                  ? "perks.correctRoll"
-                  : "perks.recordOffer";
+          const label = change.isErr()
+            ? "perks.usedElsewhere"
+            : !roll || alsoActivate
+              ? "perks.treeUse"
+              : "perks.recordOffer";
           return (
-            <article key={perk.wireId} class="trait-pick-card" data-selected={here}>
+            <article key={perk.wireId} class="trait-pick-card">
               <PerkIcon name={perk.name.en} />
               <div>
                 <h3>
@@ -304,12 +224,11 @@ function Picker({
                 type="button"
                 class="perk-choice"
                 data-wire-id={perk.wireId}
-                aria-pressed={here}
                 aria-label={t("perks.chooseAction", {
                   name: nameFor(perk, language),
                   action: t(label),
                 })}
-                disabled={here || change.isErr()}
+                disabled={change.isErr()}
                 onClick={() =>
                   onApply(
                     change,
@@ -340,20 +259,21 @@ function Node({
   selected,
   primary,
   available,
-  mode,
   language,
   onClick,
+  onClear,
 }: {
   slot: Slot;
   candidate?: Perk;
   selected: boolean;
   primary: boolean;
   available: boolean;
-  mode: TreeMode;
   language: TextLanguage;
   onClick: () => void;
+  onClear?: () => void;
 }) {
   const { t } = useTranslation();
+  const gesture = useNodeClear(candidate?.wireId, onClear);
   const { track, row } = slot;
   const name = candidate
     ? nameFor(candidate, language)
@@ -373,7 +293,7 @@ function Node({
   const label = t("perks.treeNode", { branch: t("perks." + track), row, name, state });
   const title =
     track !== "prestige" && widths[row - 1] === 3 && slot.position !== undefined
-      ? t("perks.treeSlotPosition", { slot: label, position: t(positionKey(3, slot.position)) })
+      ? t("perks.treeSlotPosition", { slot: label, position: t(positionKeys[slot.position]) })
       : label;
   return (
     <button
@@ -386,10 +306,15 @@ function Node({
       data-selected={selected}
       aria-label={title}
       aria-pressed={selected}
-      aria-disabled={!available}
+      aria-disabled={!available && !onClear}
+      aria-keyshortcuts={onClear ? "Delete Backspace" : undefined}
+      data-clearable={!!onClear}
       disabled={!available && !candidate}
+      onPointerDown={gesture.onPointerDown}
+      onContextMenu={gesture.onContextMenu}
+      onKeyDown={gesture.onKeyDown}
       onClick={() => {
-        if (available) onClick();
+        if (!gesture.consumeClick() && available) onClick();
       }}
     >
       <span class="perk-node-mark" aria-hidden="true">
@@ -406,14 +331,9 @@ function Node({
               : "?"}
         </span>
       </span>
-      {mode !== "icon" && candidate && (
+      {candidate && (
         <span class="perk-node-name" lang={language}>
           {name}
-        </span>
-      )}
-      {mode === "description" && candidate && (
-        <span class="perk-node-description" lang={language}>
-          {effectFor(candidate, language)}
         </span>
       )}
     </button>
@@ -471,7 +391,7 @@ function boardChoices(build: PerkBuild, track: Branch, row: number): readonly (P
   });
 }
 
-export function PerkTree({ build, editable, language, mode, onChange }: TreeProps) {
+export function PerkTree({ build, editable, language, onChange }: TreeProps) {
   const { t } = useTranslation();
   const board = useRef<HTMLDivElement>(null);
   const [picker, setPicker] = useState<Slot>();
@@ -492,10 +412,19 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
       );
     });
   };
+  function clear(slot: Slot) {
+    apply(clearPerkSlot(build, slot.track, slot.row, slot.position), slot, "clearNode");
+  }
   return (
     <>
-      <div class="perk-tree-scroll" data-mode={mode}>
-        <div ref={board} class="perk-tree-board" data-mode={mode}>
+      <div class="perk-tree-scroll">
+        <div
+          ref={board}
+          class="perk-tree-board"
+          role="group"
+          aria-label={t("perks.myTree")}
+          aria-describedby="trait-controls-hint"
+        >
           {perkBranches.map((track) => (
             <section
               key={track}
@@ -511,8 +440,7 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
                   (candidate) => candidate !== undefined && candidate.wireId === id,
                 );
                 const anchor = chosen >= 0 ? chosen : Math.floor((candidates.length - 1) / 2);
-                const available =
-                  editable && (row % 3 !== 0 || isRouteAvailable(build, track, row, points));
+                const reached = isRouteAvailable(build, track, row, points);
                 const lower = row > 1 ? boardChoices(build, track, row - 1) : [];
                 return (
                   <div key={row} class="perk-tier" data-row={row} data-major={row % 3 === 0}>
@@ -527,47 +455,27 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
                             candidate={candidate}
                             primary={index === anchor}
                             selected={chosen === index}
-                            available={available}
-                            mode={mode}
+                            available={editable && (candidate ? reached : row % 3 !== 0)}
                             language={language}
+                            onClear={
+                              editable && (index === chosen || candidate?.kind === "minor")
+                                ? () => clear(nodeSlot)
+                                : undefined
+                            }
                             onClick={() => {
-                              if (candidate?.kind === "major" && candidate.wireId !== id)
-                                apply(
-                                  fixedChoice(build, nodeSlot, candidate),
-                                  nodeSlot,
-                                  "activateSlot",
-                                  candidate,
-                                );
-                              else setPicker(nodeSlot);
+                              if (!candidate) setPicker(nodeSlot);
+                              else if (index !== chosen) {
+                                const change =
+                                  candidate.kind === "major"
+                                    ? activateMajor(build, track, row, candidate)
+                                    : activateMinorRoll(build, track, row, position);
+                                apply(change, nodeSlot, "activateSlot", candidate);
+                              }
                             }}
                           />
                         );
                       })}
                     </div>
-                    {mode !== "icon" && candidates.some(Boolean) && (
-                      <div class="perk-tier-legend">
-                        {candidates.map(
-                          (candidate, index) =>
-                            candidate && (
-                              <div key={candidate.wireId} class="perk-tier-note">
-                                {candidates.length > 1 && (
-                                  <small>
-                                    <Trans t={t} i18nKey={positionKey(candidates.length, index)} />
-                                  </small>
-                                )}
-                                <strong class="perk-node-name" lang={language}>
-                                  {nameFor(candidate, language)}
-                                </strong>
-                                {mode === "description" && (
-                                  <span class="perk-node-description" lang={language}>
-                                    {effectFor(candidate, language)}
-                                  </span>
-                                )}
-                              </div>
-                            ),
-                        )}
-                      </div>
-                    )}
                     {row > 1 && (
                       <Links
                         upper={candidates.length}
@@ -598,7 +506,8 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
             <div class="perk-prestige-nodes">
               {Array.from({ length: maxPrestigeSlots }, (_, index) => {
                 const slot = { track: "prestige" as const, row: index + 1 };
-                const candidate = byId.get(build.prestige[index]);
+                const id = getPrestigeSlot(build, index + 1);
+                const candidate = id === undefined ? undefined : byId.get(id);
                 return (
                   <Node
                     key={index}
@@ -606,10 +515,12 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
                     candidate={candidate}
                     primary
                     selected={!!candidate}
-                    available={editable && index <= build.prestige.length}
-                    mode={mode}
+                    available={editable}
                     language={language}
-                    onClick={() => setPicker(slot)}
+                    onClear={editable && candidate ? () => clear(slot) : undefined}
+                    onClick={() => {
+                      if (!candidate) setPicker(slot);
+                    }}
                   />
                 );
               })}
@@ -621,37 +532,9 @@ export function PerkTree({ build, editable, language, mode, onChange }: TreeProp
               </small>
             </h3>
           </section>
-          {mode !== "icon" && build.prestige.length > 0 && (
-            <div class="perk-prestige-legend">
-              {build.prestige.map((id, index) => {
-                const perk = byId.get(id);
-                return (
-                  perk && (
-                    <div key={id} class="perk-tier-note">
-                      <small>
-                        <Trans
-                          t={t}
-                          i18nKey="perks.branchRow"
-                          values={{ branch: t("perks.prestigeShort"), row: index + 1 }}
-                        />
-                      </small>
-                      <strong class="perk-node-name" lang={language}>
-                        {nameFor(perk, language)}
-                      </strong>
-                      {mode === "description" && (
-                        <span class="perk-node-description" lang={language}>
-                          {effectFor(perk, language)}
-                        </span>
-                      )}
-                    </div>
-                  )
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
-      {mode !== "description" && !picker && (
+      {!picker && (
         <PerkNodeTooltip
           board={board}
           language={language}

@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 const {
   activateMinorRoll,
+  clearPerkSlot,
   deactivateMinorRoll,
   decodePerkBuild,
   emptyPerkBuild,
@@ -326,4 +327,57 @@ test("V3 允许在历史重号路线旁记录新候选，拒绝无效存档候�
   ]) {
     assert.equal(isPerkBuild({ ...legacy, minorRolls }), false);
   }
+});
+
+test("清除已选中间格时上层退点，仍保留其他格的实际随机结果和位置", () => {
+  const build = {
+    ...emptyPerkBuild(),
+    warfighter: [1, 2, 49, 3, 4, 51, 5, 6, 53],
+    scout: [12, 13, 55],
+    prestige: [67, 70],
+    minorPositions: { warfighter: { 2: 0, 4: 2, 5: 0, 7: 2, 8: 0 }, scout: { 2: 2 } },
+    minorRolls: { 2: 14, 4: 15, 9: 16 },
+  };
+  const original = structuredClone(build);
+  const after = clearPerkSlot(build, "warfighter", 4, 2).value;
+  assert.deepEqual(after.warfighter, [1, 2, 49]);
+  assert.deepEqual(after.scout, build.scout);
+  assert.deepEqual(after.prestige, build.prestige);
+  assert.deepEqual(after.minorPositions, { warfighter: { 2: 0 }, scout: { 2: 2 } });
+  assert.equal(getMinorRoll(after, "warfighter", 4, 2), undefined);
+  assert.equal(getMinorRoll(after, "warfighter", 4, 0), 15);
+  assert.equal(getMinorRoll(after, "warfighter", 5, 0), 4);
+  assert.equal(getMinorRoll(after, "warfighter", 5, 2), 16);
+  assert.equal(getMinorRoll(after, "warfighter", 7, 2), 5);
+  assert.equal(getMinorRoll(after, "warfighter", 8, 0), 6);
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(after).value).value, after);
+  assert.deepEqual(build, original);
+});
+
+test("固定格只能清除已激活的位置，清除替代候选不会动当前路线", () => {
+  const build = { ...emptyPerkBuild(), warfighter: [1, 2, 50, 3], minorRolls: { 1: 4 } };
+  assert.ok(clearPerkSlot(build, "warfighter", 3, 0).isErr());
+  assert.ok(clearPerkSlot(build, "warfighter", 2, 2).isErr());
+  assert.ok(clearPerkSlot(build, "warfighter", 3, 2).isErr());
+  assert.ok(clearPerkSlot(build, "scout", 1, 0).isErr());
+  const withoutCandidate = clearPerkSlot(build, "warfighter", 2, 0).value;
+  assert.deepEqual(withoutCandidate, { ...emptyPerkBuild(), warfighter: [1, 2, 50, 3] });
+  const withoutMajor = clearPerkSlot(build, "warfighter", 3, 1).value;
+  assert.deepEqual(withoutMajor.warfighter, [1, 2]);
+  assert.equal(getMinorRoll(withoutMajor, "warfighter", 4, 1), 3);
+  assert.equal(getMinorRoll(withoutMajor, "warfighter", 2, 0), 4);
+  const rerouted = { ...withoutMajor, warfighter: [...withoutMajor.warfighter, 49] };
+  assert.deepEqual(activateMinorRoll(rerouted, "warfighter", 4, 1).value.warfighter, [1, 2, 49, 3]);
+});
+
+test("清除底层与末端都能读回；旧存档跨树重号仍保留另一树的已选项", () => {
+  const build = { ...emptyPerkBuild(), warfighter: [1, 2, 49, 3], scout: [3] };
+  const after = clearPerkSlot(build, "warfighter", 1, 0).value;
+  assert.deepEqual(after.warfighter, []);
+  assert.equal(getMinorRoll(after, "warfighter", 1, 0), undefined);
+  assert.equal(getMinorRoll(after, "warfighter", 2, 1), 2);
+  assert.equal(getMinorRoll(after, "scout", 1, 0), 3);
+  assert.equal(getMinorRoll(after, "warfighter", 4, 1), undefined);
+  assert.deepEqual(decodePerkBuild(encodePerkBuild(after).value).value, after);
+  assert.deepEqual(clearPerkSlot(build, "scout", 1).value, { ...build, scout: [] });
 });
