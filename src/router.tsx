@@ -5,6 +5,7 @@ const RecipesView = lazy(() => import("./views/RecipesView"));
 const WeaponManualsView = lazy(() => import("./views/WeaponManualsView"));
 const PrinterView = lazy(() => import("./views/PrinterView"));
 const RequirementsView = lazy(() => import("./views/RequirementsView"));
+const PerksView = lazy(() => import("./views/PerksView"));
 const NotFoundView = lazy(() => import("./views/NotFoundView"));
 
 export function AppRouter() {
@@ -15,6 +16,7 @@ export function AppRouter() {
       <Route path={appPath("/weapon-manuals")} component={WeaponManualsView} />
       <Route path={appPath("/printer")} component={PrinterView} />
       <Route path={appPath("/requirements")} component={RequirementsView} />
+      <Route path={appPath("/traits")} component={PerksView} />
       <Route default component={NotFoundView} />
     </Router>
   );

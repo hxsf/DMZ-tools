@@ -1,6 +1,8 @@
+import { perksZh } from "./perks";
 import { unlockZh } from "./unlock";
 
 export default {
+  perks: perksZh,
   unlock: unlockZh,
   pwa: {
     offlineReady: "已可离线使用。",
@@ -40,6 +42,8 @@ export default {
     home: "返回配方解锁",
   },
   nav: {
+    perks: "特性",
+    perksShort: "特性",
     recipes: "配方解锁",
     manuals: "武器手册",
     printer: "打印计算",

@@ -4,6 +4,7 @@ import { readFile, stat, mkdir } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { gzipSync } from "node:zlib";
 import { parseArgs } from "node:util";
+import { checkTraits, checkTraitAtlas } from "./traits-smoke.mjs";
 
 const { values } = parseArgs({
   options: {
@@ -109,7 +110,9 @@ async function waitForApp(page, route) {
       ? ".printer-page"
       : route === "requirements"
         ? ".requirements-page"
-        : ".unlock-page";
+        : route === "traits"
+          ? ".perks-page"
+          : ".unlock-page";
   await page.locator(selector).waitFor();
 }
 
@@ -441,7 +444,14 @@ try {
     saved: true,
   });
 
-  // A fresh context visits only one page online: lazy routes and weapon images must come from precache.
+  await checkTraits(page, {
+    assertNoOverflow,
+    outputDirectory,
+    label,
+    dataKey,
+  });
+
+  // The fresh context visits only recipes online before loading the other routes from precache.
   const offlineContext = await browser.newContext({ viewport: { width: 390, height: 900 } });
   contexts.push(offlineContext);
   const offlinePage = await offlineContext.newPage();
@@ -500,6 +510,7 @@ try {
     ["printer?offline=1", "printer"],
     ["weapon-manuals/", "weapon-manuals"],
     ["requirements", "requirements"],
+    ["traits/", "traits"],
     ["recipes/", "recipes"],
   ]) {
     navigationSerial += 1;
@@ -507,7 +518,8 @@ try {
     await offlinePage.goto(url(path));
     await waitForApp(offlinePage, route);
     offlinePhase = "offline-check:" + route;
-    if (route !== "requirements") await checkImages(offlinePage);
+    if (route === "traits") await checkTraitAtlas(offlinePage);
+    else if (route !== "requirements") await checkImages(offlinePage);
     await offlinePage.waitForLoadState("networkidle");
   }
   assert.equal(
@@ -524,7 +536,7 @@ try {
     storedBefore,
   );
   report("offline", {
-    routes: 4,
+    routes: 5,
     failedResourceRequests: offlineFailures.length,
     unavailableUpdateProbes: offlineUpdateProbes.length,
     navigationAborts,

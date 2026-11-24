@@ -26,3 +26,15 @@
 图片不保存在本目录；运行应用另引用 143 张真实游戏图片，分来源登记在 [DMZHub（119 张）](../../../src/assets/third-party/items/dmzhub/ATTRIBUTION.md)、[DMZTracker.gg（23 张）](../../../src/assets/third-party/items/dmztracker/ATTRIBUTION.md)和 [MW4Field（1 张）](../../../src/assets/third-party/items/mw4field/ATTRIBUTION.md)。`dmztracker.com` 配方资料与 `dmztracker.gg` 图片来源分别登记；图片许可状态以各自署名文件为准。
 
 访问日期：2026-11-05。资料适用于来源注明的 MW4 DMZ 首发期范围，不能推定适用于后续版本。未确认上述站点整体资料或图片的可复用许可；本登记仅保留来源和本项目所需事实，不替代原条款。外部参考与署名文档不导入应用，也不放入 `public/`。
+
+## MW4 DMZ 第一赛季特性
+
+2026-11-24 按 DMZHub 的逐项目录核对了 48 种随机次要特性、18 种固定主要特性和 12 种永久巅峰特性。所有条目均保留英文原名、短英文摘句和逐项英文来源。切换语言时可离线查看，较长的效果由项目另写摘要。每项数据的 `sourceUrl` 指向各自的英文条目。未将仅见于测试服数据挖掘的名称计入可获得特性。[DMZHub 英文目录](https://dmzhub.gg/traits) · [社区特性状态对照](https://codmunity.gg/dmz/traits)
+
+每棵树第 1 阶揭示一项随机次要特性，第 2、4、5、7、8 阶各从三个随机候选中择一。第 3、6、9 阶有固定的两个主要特性可选。中文版攻略保留了早期对第一阶的描述。现行规则取自更新后的官方英文说明以及三套干员的菜单记录。巅峰随机获得的特性有三个独立槽位。[官方英文前线基地指南](https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-dmz-how-to-play-forward-operating-base-guide) · [Squad Up Syndicate 干员特性树记录](https://squadup-hq.com/planner.html) · [固定层级对照](https://dmzcodex.com/trait-trees/)
+
+简中名称在两种语言的官方资料中按条目对应。`nameOfficialZh` 表示能查到官方简中名称，`descriptionOfficialZh` 单独标记采用官网原句的效果说明。首发指南列出全部 18 项主要特性与肾上腺素飙升、空中优势、投资者三个首阶示例。首发及第一赛季补丁另核实 11 个名称，包括强化麻木痛感、自动填充、插板整理、插板袋、迷你追踪器、免费装备、资源管理、空投补给、强化保命烟雾、强化隔热防护和强化无人侦察机。Possum 在首发指南称为“假死”，第一赛季公告使用“殊死抵抗”。Thermal Padding 在不同补丁中有“隔热防护”和“反侦察”两种官方用名。界面区分官网用名、项目译文及效果摘要。[简中前线基地指南](https://www.callofduty.com/cn/zh/blog/2026/10/call-of-duty-modern-warfare-4-dmz-how-to-play-forward-operating-base-guide) · [简中首发更新](https://www.callofduty.com/cn/zh/patchnotes/2026/10/call-of-duty-modern-warfare-4-launch-patch-notes) · [简中第一赛季更新](https://www.callofduty.com/cn/zh/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes)
+
+第一赛季调整包括空投补给的额外容器概率提高至 50%、X01 中迷你追踪器扫描半径缩小，以及强化无人侦察机的小地图缩放幅度调整至 1.5 倍。关于强化麻木痛感的持续时间，社区资料存在差异，应用仅标明可确认的复活增益。[第一赛季英文更新](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes) · [DMZHub 条目](https://dmzhub.gg/traits/numb-the-pain-pro) · [Final Exfil 巅峰特性对照](https://finalexfil.com/wiki/trait/pro-traits)
+
+游戏名称和原文片段归 Activision 及相关权利人所有。社区资料分别归对应作者所有。此处登记来源及适用版本，外部原文适用其本身的许可条件。

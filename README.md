@@ -1,10 +1,11 @@
 # DMZ Tools
 
-基于 Preact、TypeScript / TSX 和 Vite 的 DMZ 工具集合，提供配方与武器手册解锁跟踪、3D 打印需求计算器和需求跟踪器。默认中文，支持英文；采用紧凑白底蓝色工作台，PC 顶部导航、手机底部导航，不重复显示页面大标题。
+基于 Preact、TypeScript / TSX 和 Vite 的 DMZ 工具集合，提供配方与武器手册解锁跟踪、3D 打印需求计算器、需求跟踪器和干员特性树。默认中文，支持英文；采用紧凑白底蓝色工作台，PC 顶部导航、手机底部导航，不重复显示页面大标题。
 
 - 手动标记 34 种武器手册和 96 项打印配方（9 类），支持搜索、分类与状态筛选，类别可折叠。首发 32 把武器的中文名取自客户端截图，第一赛季新增突击步枪「克罗南鱼鹰」和微冲「CSG-35」，中文名取自官方简中赛季公告。
 - 按目标成品数量计算直接材料，不递归展开配方。来源产量未知时需显式填写单次产量，材料冲突不会自动采用某个说法。PC 左侧分类选物、右侧查看已选与材料；手机通过底部抽屉查看汇总，数量归零即移除。
 - 从计算器加入打印目标，在需求页完成、恢复或移除；同种材料先汇总，再抵扣一次共享库存。不提供自由搜集或额外的材料储备工具。
+- 在「特性」查看 MW4 DMZ 的干员特性，手动记录三条分支和永久特性。可用短分享码备份或导入一棵树。中文自译内容可点按切换到英文。
 - 首次联网缓存完成后可离线使用，并可添加到主屏幕。新版准备好时手动刷新更新；用户记录保留，未加入需求的打印草稿应先处理。
 - 物品图标使用方形稀有度底图，枪械保留横图；构建压缩图片并独立缓存。宽屏解锁目录三列，手机一列。
 - 用户记录保存到浏览器本地，后续可通过异步 KV 接口替换存储实现。首版不包含武器外观蓝图。
@@ -46,7 +47,7 @@ npm run build:pages
 npm run preview -- --base=/DMZ-tools/
 ```
 
-构建使用 `/DMZ-tools/` 作为资源和路由前缀，为四个工具生成独立的静态入口，直接访问或刷新子页面也能打开。产物包含 `.nojekyll`、`404.html`、项目许可与游戏图片版权声明，不包含源码、开发文档或个人存档。普通 `npm run dev` / `npm run build` 保持根路径。
+构建使用 `/DMZ-tools/` 作为资源和路由前缀，为各工具生成独立的静态入口，直接访问或刷新子页面也能打开。产物包含 `.nojekyll`、`404.html`、项目许可与游戏图片版权声明，不包含源码、开发文档或个人存档。普通 `npm run dev` / `npm run build` 保持根路径。
 
 GitHub 规则参考：[使用自定义 Actions 工作流发布 Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow)。
 
@@ -74,7 +75,8 @@ DMZ-tools/
 │   ├── styles/                  # 全局样式
 │   └── assets/
 │       └── third-party/        # 外部图片等资源，引用后进入 Vite 构建
-│           └── items/          # 游戏物品图片，继续按来源分目录
+│           ├── items/          # 物品和武器原图，按来源分目录
+│           └── perks/          # 特性图标原图，构建时合成图集
 ├── public/                     # 需原样复制的自有静态文件
 ├── docs/
 │   ├── development/            # 项目自编的设计与开发文档
@@ -107,6 +109,6 @@ DMZ-tools/
 
 项目原创代码和自编文档使用根目录 [LICENSE](LICENSE)。上述两个目录中的**第三方内容版权归原权利人所有，保留各自原许可证或授权条件，不继承项目许可证**；收录、转换或打包均不改变其归属。目录内由本项目编写的说明和模板仍遵循项目许可证。
 
-当前收录 146 张真实游戏图片（112 张物品 / 材料、34 张武器），通过 [`src/data/images.ts`](src/data/images.ts) 显式引用，武器手册使用对应武器图片。逐项来源与署名分别记录在 [DMZHub（119 张）](src/assets/third-party/items/dmzhub/ATTRIBUTION.md)、[DMZTracker（23 张）](src/assets/third-party/items/dmztracker/ATTRIBUTION.md)、[MW4Field（1 张）](src/assets/third-party/items/mw4field/ATTRIBUTION.md)及 [GG Ranked（3 张）](src/assets/third-party/items/ggranked/ATTRIBUTION.md)。未收集到图片的物品只显示名称，不使用生成图或替代图。
+物品与武器目录收录 146 张真实游戏图片（112 张物品 / 材料、34 张武器），通过 [`src/data/images.ts`](src/data/images.ts) 显式引用，武器手册使用对应武器图片。逐项来源与署名分别记录在 [DMZHub（119 张）](src/assets/third-party/items/dmzhub/ATTRIBUTION.md)、[DMZTracker（23 张）](src/assets/third-party/items/dmztracker/ATTRIBUTION.md)、[MW4Field（1 张）](src/assets/third-party/items/mw4field/ATTRIBUTION.md)及 [GG Ranked（3 张）](src/assets/third-party/items/ggranked/ATTRIBUTION.md)。特性目录的 78 项中，75 项有逐项核对的游戏图标，构建时合成一张带内容哈希的 WebP 图集。余下三项以文字展示。图集的原图及出处见[特性素材目录](src/assets/third-party/perks/)。未收集到图片的物品只显示名称，不使用生成图或替代图。
 
 加入外部内容时，按来源附带 `ATTRIBUTION.md` 和原版权、许可文件；声明与登记模板不构成素材授权。具体约定见 [第三方内容声明](THIRD_PARTY_NOTICES.md)。

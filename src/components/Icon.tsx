@@ -2,6 +2,7 @@ import book from "@tabler/icons/outline/book.svg?raw";
 import flask from "@tabler/icons/outline/flask.svg?raw";
 import calculator from "@tabler/icons/outline/calculator.svg?raw";
 import checklist from "@tabler/icons/outline/checklist.svg?raw";
+import hierarchy from "@tabler/icons/outline/hierarchy.svg?raw";
 import search from "@tabler/icons/outline/search.svg?raw";
 import down from "@tabler/icons/outline/chevron-down.svg?raw";
 import right from "@tabler/icons/outline/chevron-right.svg?raw";
@@ -16,6 +17,7 @@ const icons = {
   flask,
   calculator,
   checklist,
+  hierarchy,
   search,
   "chevron-down": down,
   "chevron-right": right,

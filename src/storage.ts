@@ -1,4 +1,5 @@
 import { Result } from "ts-results-es";
+import { emptyPerkBuild, isPerkBuild } from "./perk-code";
 import type {
   Inventory,
   UnlockProgress,
@@ -133,7 +134,8 @@ export function isUserSnapshot(value: unknown): value is UserSnapshot {
     value.schemaVersion === 1 &&
     isInventory(value.inventory) &&
     isUnlockProgress(value.unlocks) &&
-    isPlans(value.plans)
+    isPlans(value.plans) &&
+    (value.perks === undefined || isPerkBuild(value.perks))
   );
 }
 
@@ -143,6 +145,7 @@ export function createEmptySnapshot(): UserSnapshot {
     inventory: { items: {}, cash: null },
     unlocks: { recipes: {}, manuals: {}, capabilities: {}, dmzLevel: null },
     plans: [],
+    perks: emptyPerkBuild(),
   };
 }
 

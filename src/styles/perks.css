@@ -1,0 +1,249 @@
+.perk-toolbar,
+.perk-progress,
+.perk-language,
+.perks-page summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.perk-toolbar,
+.perk-progress {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.perk-language {
+  font-size: 12px;
+}
+.perk-progress {
+  justify-content: flex-start;
+  gap: 8px 16px;
+}
+.perk-progress strong {
+  color: var(--blue);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.perk-group,
+.perk-share,
+.perk-branch {
+  min-width: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.perks-page summary {
+  min-height: 40px;
+  padding: 7px 12px;
+  font-weight: 650;
+  border-radius: 8px;
+}
+.perks-page details[open] > summary {
+  border-bottom: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+}
+.perks-page summary .icon {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+.perk-count {
+  margin-inline-start: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.perk-share,
+.perk-search,
+.perk-group {
+  margin-bottom: 12px;
+}
+.perk-code-fields,
+.perk-tree-grid,
+.perk-catalog-grid,
+.perk-prestige .perk-slots {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+.perk-code-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 12px;
+}
+.perk-code-fields label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.perk-code-line {
+  display: flex;
+  gap: 6px;
+}
+.perk-code-line input {
+  flex: 1;
+  font-family: ui-monospace, monospace;
+}
+.perk-code-line button {
+  flex-shrink: 0;
+}
+.perk-share > p {
+  padding: 0 12px 10px;
+}
+.perk-error {
+  color: #a43127;
+}
+.perk-tree-grid,
+.perk-catalog-grid,
+.perk-prestige .perk-slots {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.perk-prestige {
+  grid-column: 1 / -1;
+}
+.perk-slots {
+  margin: 0;
+  padding: 0 10px;
+  list-style: none;
+}
+.perk-slot,
+.perk-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 0;
+}
+.perk-slot + .perk-slot,
+.perk-entry {
+  border-top: 1px solid #edf0f5;
+}
+.perk-slot select {
+  width: 100%;
+  min-height: 34px;
+  padding: 4px 6px;
+}
+.perk-slot.is-upcoming .perk-slot-body {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+.perk-slot.is-upcoming select {
+  appearance: none;
+  width: auto;
+  max-width: 50%;
+  min-height: 24px;
+  padding: 0 2px;
+  border: 0;
+  opacity: 1;
+  color: var(--muted);
+  font-size: 12px;
+}
+.perk-slot.is-upcoming {
+  align-items: center;
+  padding: 5px 0;
+}
+.perk-index {
+  flex: 0 0 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.perk-slot.is-selected .perk-index {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+.perk-slot.is-next .perk-index {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.perk-slot-body,
+.perk-entry > div {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.perk-entry h3 {
+  font-size: 14px;
+}
+.perk-meta,
+.perk-reference {
+  color: var(--muted);
+  font-size: 12px;
+}
+.perk-entry p,
+.perk-slot p {
+  margin-top: 3px;
+  color: #4f596a;
+  font-size: 13px;
+}
+.perk-source-short {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  min-height: 24px;
+  font-size: 15px;
+  text-decoration: none;
+}
+.perk-source-short:hover {
+  text-decoration: underline;
+}
+.perk-mark {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0 3px;
+  border: 0;
+  color: var(--blue);
+  background: transparent;
+  font-size: 12px;
+  vertical-align: baseline;
+}
+.perk-reference {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  margin-top: 4px;
+}
+.perk-catalog-grid {
+  align-items: stretch;
+  gap: 0 16px;
+  padding: 0 12px;
+}
+.perk-prestige .perk-slots {
+  gap: 0 12px;
+}
+@media (min-width: 1280px) {
+  .perk-tree-grid,
+  .perk-catalog-grid,
+  .perk-prestige .perk-slots {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .perk-tree-grid,
+  .perk-catalog-grid,
+  .perk-prestige .perk-slots,
+  .perk-code-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .perk-toolbar {
+    gap: 4px 8px;
+  }
+  .perk-tree-grid {
+    gap: 8px;
+  }
+  .perk-progress {
+    gap: 2px 8px;
+  }
+  .perks-page summary,
+  .perk-slot select:not(:disabled),
+  .perk-code-line button {
+    min-height: 44px;
+  }
+}

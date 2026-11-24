@@ -1,6 +1,8 @@
+import { perksEn } from "./perks";
 import { unlockEn } from "./unlock";
 
 export default {
+  perks: perksEn,
   unlock: unlockEn,
   pwa: {
     offlineReady: "Ready to use offline.",
@@ -40,6 +42,8 @@ export default {
     home: "Back to recipes",
   },
   nav: {
+    perks: "Traits",
+    perksShort: "Traits",
     recipes: "Recipes",
     manuals: "Weapon manuals",
     printer: "Calculator",

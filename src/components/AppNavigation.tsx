@@ -8,11 +8,13 @@ const links = [
   { href: "/weapon-manuals", key: "manuals", icon: "book" },
   { href: "/printer", key: "printer", icon: "calculator" },
   { href: "/requirements", key: "requirements", icon: "checklist" },
+  { href: "/traits", key: "perks", icon: "hierarchy" },
 ] as const;
 
 export function AppNavigation() {
   const { path } = useLocation();
   const { t } = useTranslation();
+  const currentPath = path.replace(/\/+$/, "") || "/";
   const rootPath = appPath("/").replace(/\/$/, "") || "/";
   return (
     <nav class="app-navigation">
@@ -21,7 +23,8 @@ export function AppNavigation() {
           key={link.href}
           href={appPath(link.href)}
           aria-current={
-            path === appPath(link.href) || (path === rootPath && link.key === "recipes")
+            currentPath === appPath(link.href) ||
+            (currentPath === rootPath && link.key === "recipes")
               ? "page"
               : undefined
           }

@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import prefresh from "@prefresh/vite";
 import { gameImageAssets } from "./scripts/image-assets.mjs";
+import { perkAtlas } from "./scripts/perk-atlas.mjs";
 
 export default defineConfig({
-  plugins: [gameImageAssets(), await prefresh()],
+  plugins: [gameImageAssets(), perkAtlas(), await prefresh()],
   oxc: { jsx: { runtime: "automatic", importSource: "preact" } },
   build: { minify: "oxc" },
   resolve: {

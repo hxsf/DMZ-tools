@@ -15,8 +15,8 @@ src/assets/third-party/
 
 新增资源时，从 [`ATTRIBUTION.template.md`](ATTRIBUTION.template.md) 创建来源目录的 `ATTRIBUTION.md`，记录对应文件、原权利人、来源 URL、版本或获取日期、许可与修改情况，并保留原版权和许可文件。确认原条款允许本项目所需的使用与分发；未知信息应标注“待确认”，本说明本身不构成授权。
 
-应用通过静态 `import` 或限定图片扩展名的 `import.meta.glob` 引用资源，由 Vite 生成构建后的 URL。未被引用的文件不会自动打包；小文件可能内联。不要把应用使用的这类资源放到 `public/`，以免绕过 Vite 的资源处理。
+物品和武器图由应用显式引用，Vite 为其生成独立的资源 URL。`perks/<来源>/` 下的特性图标由构建插件按文件名定位，等比缩放后合成一张可离线缓存的 WebP 图集。原图保留在各来源目录。
 
 署名登记和许可文件不应作为图片导入。Vite 不会自动将相邻声明一同发布；加入实际资源时，按原条款安排产物中的署名和许可文本。开发用外部资料放在 [`docs/external/`](../../../docs/external/README.md)。
 
-当前尚未收录实际第三方资源。全局声明见 [`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md)。
+物品和武器见 [`items/`](items/)，特性图标见 [`perks/`](perks/)。全局声明见 [`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md)。

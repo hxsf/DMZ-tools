@@ -1,4 +1,5 @@
 import type { ItemId } from "./item";
+import type { PerkBuild } from "./perk-build";
 import type { RecipeId } from "./recipe";
 import type { RequirementPlan } from "./requirement";
 import type { CapabilityId } from "./unlock";
@@ -30,4 +31,6 @@ export interface UserSnapshot {
   readonly inventory: Inventory;
   readonly unlocks: UnlockProgress;
   readonly plans: readonly RequirementPlan[];
+  /** 旧版 v1 存档缺少此字段时，玩家尚未记录特性。 */
+  readonly perks?: PerkBuild;
 }

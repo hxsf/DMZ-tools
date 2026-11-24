@@ -13,6 +13,8 @@ try {
     entry,
     [
       "src/kv.ts",
+      "src/perk-code.ts",
+      "src/data/perks.ts",
       "src/storage.ts",
       "src/stores/index.ts",
       "src/stores/app.ts",

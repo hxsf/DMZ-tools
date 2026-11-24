@@ -7,7 +7,7 @@ const dist = join(root, "dist");
 const index = join(dist, "index.html");
 
 // Pages 按目录提供入口，直接访问或刷新工具路由不依赖服务器回退。
-for (const route of ["recipes", "weapon-manuals", "printer", "requirements"]) {
+for (const route of ["recipes", "weapon-manuals", "printer", "requirements", "traits"]) {
   const directory = join(dist, route);
   await mkdir(directory, { recursive: true });
   await copyFile(index, join(directory, "index.html"));
@@ -20,11 +20,14 @@ for (const name of ["LICENSE", "THIRD_PARTY_NOTICES.md"]) {
   await copyFile(join(root, name), join(dist, name));
 }
 await mkdir(join(dist, "third-party"), { recursive: true });
-const imageSources = join(root, "src/assets/third-party/items");
-for (const source of await readdir(imageSources, { withFileTypes: true })) {
-  if (!source.isDirectory()) continue;
-  await copyFile(
-    join(imageSources, source.name, "ATTRIBUTION.md"),
-    join(dist, "third-party", `${source.name}.md`),
-  );
+for (const kind of ["items", "perks"]) {
+  const directory = join(root, "src/assets/third-party", kind);
+  for (const source of await readdir(directory, { withFileTypes: true })) {
+    if (!source.isDirectory()) continue;
+    const notice = kind === "items" ? source.name : `${source.name}-perks`;
+    await copyFile(
+      join(directory, source.name, "ATTRIBUTION.md"),
+      join(dist, "third-party", `${notice}.md`),
+    );
+  }
 }

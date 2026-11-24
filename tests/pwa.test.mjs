@@ -9,7 +9,7 @@ import sharp from "sharp";
 import { preparePwa } from "../scripts/prepare-pwa.mjs";
 
 const template = await readFile(new URL("../scripts/service-worker.js", import.meta.url), "utf8");
-const routes = ["recipes", "weapon-manuals", "printer", "requirements"];
+const routes = ["recipes", "weapon-manuals", "printer", "requirements", "traits"];
 const origin = "https://example.test";
 
 async function fixture(base) {

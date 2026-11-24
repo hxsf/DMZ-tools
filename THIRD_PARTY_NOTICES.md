@@ -13,4 +13,4 @@
 
 发布应用时，应随产物交付所使用资源要求附带的署名、原版权声明和许可文本。Vite 处理资源不会自动复制其相邻的 `ATTRIBUTION.md` 或许可证，添加素材时应同时安排这些文件的发布方式。外部参考文档不复制到应用产物；将其收录进源码仓库本身也须符合原条款。
 
-当前整理游戏事实与参考链接，并收录 146 张真实游戏图片。原图分别登记在 `src/assets/third-party/items/` 下的 `dmzhub/`、`dmztracker/`、`mw4field/` 和 `ggranked/` 来源目录；构建会生成裁除透明边距、缩小及压缩的副本，仓库原图保持原样。外部文档参考出处见 `docs/external/mw4-dmz/ATTRIBUTION.md`。新增内容的具体权利人和条款，以各来源目录中的登记及原始声明为准。本文件不替代软件依赖各自的许可证。
+当前整理游戏事实与参考链接，并收录 146 张物品和武器图片。原图分别登记在 `src/assets/third-party/items/` 下的 `dmzhub/`、`dmztracker/`、`mw4field/` 和 `ggranked/` 来源目录；构建会生成裁除透明边距、缩小及压缩的副本，仓库原图保持原样。特性图标原图另行登记在 `src/assets/third-party/perks/` 的各来源目录，构建时合成图集，发布产物的 `third-party/` 目录附带各来源的 `*-perks.md`。外部文档参考出处见 `docs/external/mw4-dmz/ATTRIBUTION.md`。新增内容的具体权利人和条款，以各来源目录中的登记及原始声明为准。本文件不替代软件依赖各自的许可证。

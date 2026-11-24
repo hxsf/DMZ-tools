@@ -17,7 +17,7 @@ export function createAppState(kv: AsyncKV) {
   const loadIssue = signal<Option<LoadIssue>>(None);
   const saveIssue = signal<Option<SaveIssue>>(None);
   let loading: Option<Promise<void>> = None;
-  let saveQueue = Promise.resolve();
+  let saveQueue = Promise.resolve(true);
   let pendingSaves = 0;
 
   function load(): Promise<void> {
@@ -48,8 +48,9 @@ export function createAppState(kv: AsyncKV) {
     return task;
   }
 
-  function persist(): Promise<void> {
-    if (loadStatus.value !== "ready") return Promise.resolve();
+  /** 返回此次写入的结果，即使后续快照已经排队。 */
+  function persist(): Promise<boolean> {
+    if (loadStatus.value !== "ready") return Promise.resolve(false);
 
     // 调用时即固定快照，等待队列期间的后续修改由下一次保存处理。
     const snapshot = stores.snapshot();
@@ -63,6 +64,7 @@ export function createAppState(kv: AsyncKV) {
         saveStatus.value =
           pendingSaves > 0 ? "saving" : result.status === "saved" ? "saved" : "error";
       });
+      return result.status === "saved";
     });
     saveQueue = task;
     return task;

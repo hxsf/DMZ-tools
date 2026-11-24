@@ -3,7 +3,7 @@ import { setImmediate } from "node:timers/promises";
 import { test } from "node:test";
 import { Err, None, Ok, Some } from "ts-results-es";
 
-const { createAppState, createEmptySnapshot, STORAGE_KEY } = await import(
+const { createAppState, createEmptySnapshot, perks, STORAGE_KEY } = await import(
   process.env.DMZ_TEST_RUNTIME
 );
 
@@ -36,7 +36,7 @@ test("应用状态显式加载且不隐式保存，重复加载不覆盖已经�
   const kv = memoryKV(original);
   const app = createAppState(kv);
   assert.deepEqual(kv.calls, { reads: 0, writes: 0 });
-  await app.persist();
+  assert.equal(await app.persist(), false);
   assert.equal(kv.calls.writes, 0);
 
   await app.load();
@@ -48,7 +48,7 @@ test("应用状态显式加载且不隐式保存，重复加载不覆盖已经�
   assert.equal(kv.calls.reads, 1);
   assert.equal(app.stores.inventory.state.value.items["item:metals"], 7);
 
-  await app.persist();
+  assert.equal(await app.persist(), true);
   assert.equal(kv.calls.writes, 1);
   assert.equal(app.saveStatus.value, "saved");
   assert.equal(app.saveIssue.value.isNone(), true);
@@ -133,8 +133,7 @@ test("连续保存按调用顺序写入，各自使用调用时快照", async ()
       assert.equal(key, STORAGE_KEY);
       const index = writes.length;
       writes.push(JSON.parse(text));
-      await gates[index].promise;
-      return Ok(undefined);
+      return gates[index].promise;
     },
   });
   await app.load();
@@ -148,14 +147,15 @@ test("连续保存按调用顺序写入，各自使用调用时快照", async ()
   assert.equal(writes[0].inventory.items["item:metals"], 5);
   assert.equal(app.saveStatus.value, "saving");
 
-  gates[0].resolve();
-  await first;
+  const failure = { code: "unavailable", operation: "set", key: STORAGE_KEY, cause: "offline" };
+  gates[0].resolve(Err(failure));
+  assert.equal(await first, false);
   await setImmediate();
   assert.equal(writes.length, 2);
   assert.equal(writes[1].inventory.items["item:metals"], 8);
   assert.equal(app.saveStatus.value, "saving");
-  gates[1].resolve();
-  await second;
+  gates[1].resolve(Ok(undefined));
+  assert.equal(await second, true);
   assert.equal(app.saveStatus.value, "saved");
   assert.equal(app.stores.inventory.state.value.items["item:metals"], 12);
 });
@@ -193,4 +193,63 @@ test("写入 Err 不阻断后续重试，重试保存最新状态并保留失败
   assert.equal(saved.inventory.items["item:metals"], 8);
   assert.equal(app.saveStatus.value, "saved");
   assert.equal(app.saveIssue.value.isNone(), true);
+});
+
+test("旧 v1 存档可记录和清除特性树，重载后保留全部既有进度", async () => {
+  const legacy = createEmptySnapshot();
+  delete legacy.perks;
+  legacy.inventory.items["item:metals"] = 6;
+  legacy.unlocks.manuals["item:manual-m4"] = {
+    status: "unlocked",
+    updatedAt: "2026-11-05T00:00:00.000Z",
+  };
+  legacy.plans.push({
+    id: "plan:bandage",
+    title: "绷带",
+    status: "active",
+    priority: 0,
+    targets: [{ kind: "craft", recipeId: "recipe:bandage", quantity: 2 }],
+  });
+  const kv = memoryKV(legacy);
+  const app = createAppState(kv);
+  await app.load();
+  const empty = app.stores.perks.state.value;
+  assert.deepEqual(empty, { warfighter: [], scout: [], survivalist: [], prestige: [] });
+  assert.equal(kv.calls.writes, 0);
+
+  const id = perks.find((perk) => perk.kind === "prestige").wireId;
+  const build = { ...empty, prestige: [id] };
+  assert.equal(app.stores.perks.replace(build).isOk(), true);
+  build.prestige.length = 0;
+  await app.persist();
+
+  const reopened = createAppState(kv);
+  await reopened.load();
+  assert.deepEqual(reopened.stores.snapshot(), { ...legacy, perks: { ...empty, prestige: [id] } });
+  assert.equal(reopened.stores.perks.replace(empty).isOk(), true);
+  await reopened.persist();
+  const cleared = createAppState(kv);
+  await cleared.load();
+  assert.deepEqual(cleared.stores.snapshot(), { ...legacy, perks: empty });
+});
+
+test("无效特性选择和导入不改变原记录，损坏的特性存档阻止写入", async () => {
+  const app = createAppState(memoryKV());
+  await app.load();
+  const empty = app.stores.perks.state.value;
+  const id = perks.find((perk) => perk.kind === "prestige").wireId;
+  assert.equal(app.stores.perks.replace({ ...empty, prestige: [id] }).isOk(), true);
+  const before = app.stores.snapshot();
+  const invalid = { ...empty, warfighter: [-1] };
+  assert.equal(app.stores.perks.replace(invalid).isErr(), true);
+  const damaged = { ...before, perks: invalid, inventory: { items: {}, cash: 3500 } };
+  assert.equal(app.stores.importJson(JSON.stringify(damaged)).status, "invalid");
+  assert.deepEqual(app.stores.snapshot(), before);
+
+  const kv = memoryKV(damaged);
+  const blocked = createAppState(kv);
+  await blocked.load();
+  assert.equal(blocked.loadIssue.value.value.status, "invalid");
+  await blocked.persist();
+  assert.equal(kv.calls.writes, 0);
 });

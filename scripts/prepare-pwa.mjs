@@ -51,7 +51,7 @@ export async function preparePwa({ base = "/", dist = resolve("dist") } = {}) {
     id: "./",
     name: "DMZ 工具箱",
     short_name: "DMZ 工具",
-    description: "蓝图解锁跟踪、3D 打印计算与需求跟踪",
+    description: "蓝图解锁跟踪、3D 打印计算、需求跟踪与干员特性树",
     lang: "zh-CN",
     start_url: "./",
     scope: "./",
