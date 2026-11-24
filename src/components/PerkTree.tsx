@@ -22,6 +22,7 @@ import {
 import { clearPerkSlot } from "../perk-tree-actions";
 import { useNodeClear } from "./useNodeClear";
 import { Icon } from "./Icon";
+import { PerkGlyph } from "./PerkGlyph";
 import { PerkIcon } from "./PerkIcon";
 import { PerkText, type TextLanguage } from "./PerkText";
 import { PerkNodeTooltip } from "./PerkNodeTooltip";
@@ -317,20 +318,11 @@ function Node({
         if (!gesture.consumeClick() && available) onClick();
       }}
     >
-      <span class="perk-node-mark" aria-hidden="true">
-        {candidate && <PerkIcon name={candidate.name.en} />}
-        <span class="perk-node-fallback">
-          {candidate
-            ? candidate.name.en
-                .split(/\s+/)
-                .map((word) => word[0])
-                .slice(0, 2)
-                .join("")
-            : track === "prestige"
-              ? "+"
-              : "?"}
-        </span>
-      </span>
+      <PerkGlyph
+        name={candidate?.name.en}
+        selected={selected}
+        placeholder={track === "prestige" ? "+" : "?"}
+      />
       {candidate && (
         <span class="perk-node-name" lang={language}>
           {name}
@@ -430,6 +422,7 @@ export function PerkTree({ build, editable, language, onChange }: TreeProps) {
               key={track}
               class="perk-branch-diagram"
               data-branch={track}
+              data-perk-theme={track}
               aria-labelledby={"trait-title-" + track}
             >
               {rows.map((row) => {
@@ -502,6 +495,7 @@ export function PerkTree({ build, editable, language, onChange }: TreeProps) {
             class="perk-prestige-diagram"
             aria-labelledby="trait-title-prestige"
             data-branch="prestige"
+            data-perk-theme="prestige"
           >
             <div class="perk-prestige-nodes">
               {Array.from({ length: maxPrestigeSlots }, (_, index) => {

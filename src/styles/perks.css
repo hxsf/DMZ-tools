@@ -21,17 +21,6 @@
   display: grid;
   flex: 1;
 }
-@media (min-width: 1051px) {
-  .app-content:has(> .perks-page) {
-    max-width: none;
-    padding-inline: clamp(12px, 1vw, 24px);
-  }
-  .perks-page > .perk-directory {
-    width: 100%;
-    max-width: 1384px;
-    margin-inline: auto;
-  }
-}
 @media (min-width: 721px) and (max-width: 1050px) {
   #traits-tree[data-mode="board"] {
     min-height: calc(100svh - 96px);

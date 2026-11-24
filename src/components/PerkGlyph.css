@@ -1,0 +1,56 @@
+[data-perk-theme="warfighter"] {
+  --tint: #c45f60;
+  --node-shape: polygon(24% 3%, 76% 3%, 100% 50%, 76% 97%, 24% 97%, 0% 50%);
+}
+[data-perk-theme="scout"] {
+  --tint: #c9ac4c;
+  --node-shape: circle(49%);
+}
+[data-perk-theme="survivalist"] {
+  --tint: #4cb6ba;
+  --node-shape: inset(2%);
+}
+[data-perk-theme="prestige"] {
+  --tint: #c6a765;
+  --node-shape: polygon(4% 8%, 50% 0, 96% 8%, 87% 58%, 68% 85%, 50% 99%, 32% 85%, 13% 58%);
+}
+.perk-node-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--node-mark-size, var(--mark-size));
+  height: var(--node-mark-size, var(--mark-size));
+  background: color-mix(in srgb, var(--tint) 85%, white);
+  clip-path: var(--node-shape);
+}
+.perk-node-mark::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  background: #2b302f;
+  clip-path: var(--node-shape);
+}
+.perk-node-mark .perk-icon,
+.perk-node-fallback {
+  position: relative;
+  grid-area: 1 / 1;
+}
+.perk-node-mark .perk-icon {
+  width: 70%;
+  height: 70%;
+  background-color: transparent;
+  border-radius: 0;
+}
+.perk-node-fallback {
+  color: inherit;
+  font-size: calc(var(--node-mark-size, var(--mark-size)) * 0.48);
+  font-weight: 700;
+}
+.perk-node-mark[data-lit="true"] {
+  background: #fff7d8;
+}
+.perk-node-mark[data-lit="true"]::before {
+  inset: 2px;
+  background: color-mix(in srgb, var(--tint) 75%, #202323);
+}

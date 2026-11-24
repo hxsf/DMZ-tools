@@ -18,8 +18,6 @@
 }
 .perk-branch-diagram,
 .perk-prestige-diagram {
-  --tint: #c45f60;
-  --node-shape: polygon(24% 3%, 76% 3%, 100% 50%, 76% 97%, 24% 97%, 0% 50%);
   position: relative;
   isolation: isolate;
   min-width: 0;
@@ -45,13 +43,7 @@
   clip-path: polygon(0 20px, 13px 0, calc(100% - 13px) 0, 100% 20px, 100% 100%, 0 100%);
 }
 .perk-branch-diagram[data-branch="scout"] {
-  --tint: #c9ac4c;
-  --node-shape: circle(49%);
   border-radius: 50% 50% 0 0 / 35px 35px 0 0;
-}
-.perk-branch-diagram[data-branch="survivalist"] {
-  --tint: #4cb6ba;
-  --node-shape: inset(2%);
 }
 .perk-tier {
   display: flex;
@@ -115,43 +107,7 @@
 .perk-node:focus-visible {
   outline: none;
 }
-.perk-node-mark {
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: var(--node-mark-size, var(--mark-size));
-  height: var(--node-mark-size, var(--mark-size));
-  background: color-mix(in srgb, var(--tint) 85%, white);
-  clip-path: var(--node-shape);
-}
-.perk-node-mark::before {
-  content: "";
-  position: absolute;
-  inset: 1.5px;
-  background: #2b302f;
-  clip-path: var(--node-shape);
-}
-.perk-node-mark .perk-icon,
-.perk-node-fallback {
-  position: relative;
-  grid-area: 1 / 1;
-}
-.perk-node-mark .perk-icon {
-  width: 70%;
-  height: 70%;
-  background-color: transparent;
-  border-radius: 0;
-}
-.perk-node-fallback {
-  color: inherit;
-  font-size: calc(var(--node-mark-size, var(--mark-size)) * 0.48);
-  font-weight: 700;
-}
-.perk-node-mark [data-perk-icon] + .perk-node-fallback {
-  display: none;
-}
-.perk-node:is(:disabled, [aria-disabled="true"]) .perk-node-mark {
+.perk-node:is(:disabled, [aria-disabled="true"]) .perk-node-mark:where([data-lit="false"]) {
   background: #696c67;
 }
 .perk-node:is(:disabled, [aria-disabled="true"]) .perk-node-mark > span {
@@ -159,13 +115,6 @@
 }
 .perk-node[data-recorded="true"][data-selected="false"] .perk-node-mark::before {
   background: color-mix(in srgb, var(--tint) 26%, #202424);
-}
-.perk-node[data-selected="true"] .perk-node-mark {
-  background: #fff7d8;
-}
-.perk-node[data-selected="true"] .perk-node-mark::before {
-  inset: 2px;
-  background: color-mix(in srgb, var(--tint) 75%, #202323);
 }
 .perk-node:hover .perk-node-mark {
   background: #fff4c3;
@@ -246,10 +195,6 @@
   color: #ecebdc;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
-}
-.perk-prestige-diagram {
-  --tint: #c6a765;
-  --node-shape: polygon(4% 8%, 50% 0, 96% 8%, 87% 58%, 68% 85%, 50% 99%, 32% 85%, 13% 58%);
 }
 .perk-prestige-nodes {
   grid-row: 1 / span 9;

@@ -265,6 +265,22 @@ async function checkNodeTooltip(page, outputDirectory, label) {
   await page.mouse.move(1, 1);
 }
 
+async function checkDesktopContentWidth(element) {
+  const sizes = await element.evaluate((content) => {
+    const shell = content.closest(".app-content").getBoundingClientRect();
+    return {
+      outer: shell.width,
+      inner: content.getBoundingClientRect().width,
+      left: shell.left,
+      right: document.documentElement.clientWidth - shell.right,
+    };
+  });
+  assert.equal(sizes.outer, 1440, "Both trait views use the shared desktop width.");
+  // The tree has an additional one-pixel border inside the 28px page gutters.
+  assert.ok(Math.abs(sizes.inner - 1384) <= 2, JSON.stringify(sizes));
+  assert.ok(Math.abs(sizes.left - sizes.right) <= 1, JSON.stringify(sizes));
+}
+
 async function checkBoardLayout(page, width) {
   const layout = await page.locator(".perk-tree-board").evaluate((board) => {
     const rowTops = new Map();
@@ -307,26 +323,67 @@ async function checkBoardLayout(page, width) {
   );
   if (width >= 1440) assert.ok(layout.ordinary > 42);
   if (width === 320) assert.ok(layout.ordinary > 18);
-  if (width === 1920) assert.ok(layout.width > 1800);
+  if (width === 1920) await checkDesktopContentWidth(page.locator(".perk-tree-board"));
   console.log(JSON.stringify({ check: "trait-board-geometry", viewport: width, ...layout }));
 }
 
+// Compare the visual frame and the actual sprite tile for every active trait.
+async function readGlyphs(elements) {
+  return elements.evaluateAll((nodes) =>
+    nodes
+      .map((node) => {
+        const glyph = node.querySelector(".perk-node-mark");
+        const icon = glyph.querySelector("[data-perk-icon]");
+        const style = getComputedStyle(glyph);
+        return {
+          id: Number(node.dataset.wireId),
+          theme: glyph.closest("[data-perk-theme]").dataset.perkTheme,
+          lit: glyph.dataset.lit,
+          shape: style.clipPath,
+          tint: style.getPropertyValue("--tint").trim(),
+          image: icon && getComputedStyle(icon).backgroundImage,
+          tile: icon && getComputedStyle(icon).backgroundPosition,
+        };
+      })
+      .sort((a, b) => a.id - b.id),
+  );
+}
+
 async function checkActiveDetails(page, width, full) {
+  const boardGlyphs = full
+    ? await readGlyphs(page.locator('.perk-tree-board .perk-node[data-selected="true"]'))
+    : [];
   await showTab(page, "details");
-  const columns = page.locator(".perk-active-column");
+  const details = page.locator(".perk-active-build");
+  if (width === 1920) await checkDesktopContentWidth(details);
+  const band = details.locator(".perk-active-prestige-band");
+  const slots = band.locator(".perk-active-prestige");
+  const columns = details.locator(".perk-active-lanes > .perk-active-column");
+  assert.equal(await slots.count(), 3);
   assert.equal(await columns.count(), 3);
+  assert.equal(await band.getAttribute("data-perk-theme"), "prestige");
+  const bandBox = await band.boundingBox();
   const prestigeIds = [74, 67, 69];
   const prestigeTypes = ["warfighter", "warfighter", "scout"];
-  const rects = [];
+  const slotBoxes = [];
+  const panels = [];
   for (const [i, branch] of branchNames.entries()) {
     const column = columns.nth(i);
     assert.equal(await column.getAttribute("data-branch"), branch);
-    const prestige = column.locator(".perk-active-prestige");
+    assert.equal(await column.getAttribute("data-perk-theme"), branch);
+    const panel = await column.boundingBox();
+    assert.ok(
+      panel.y >= bandBox.y + bandBox.height - 1,
+      "All Prestige slots are above every branch.",
+    );
+    panels.push(panel);
+    const prestige = slots.nth(i);
     assert.equal(await prestige.getAttribute("data-prestige-slot"), String(i + 1));
-    rects.push(await prestige.boundingBox());
+    slotBoxes.push(await prestige.boundingBox());
     const rows = column.locator(".perk-active-row");
     if (!full) {
       assert.equal(await prestige.getAttribute("data-wire-id"), null);
+      assert.equal(await prestige.locator(".perk-node-mark").getAttribute("data-lit"), "false");
       assert.equal(await rows.count(), 0);
       continue;
     }
@@ -349,9 +406,41 @@ async function checkActiveDetails(page, width, full) {
       );
     }
   }
-  if (width >= 1000) {
-    assert.ok(rects.every((box) => Math.abs(box.y - rects[0].y) <= 1));
-    assert.ok(rects[0].x < rects[1].x && rects[1].x < rects[2].x);
+  const backgrounds = await columns.evaluateAll((els) =>
+    els.map((el) => {
+      const style = getComputedStyle(el);
+      return style.backgroundColor + " " + style.backgroundImage;
+    }),
+  );
+  assert.equal(new Set(backgrounds).size, 3, "Each branch has its own tinted panel.");
+  if (width > 900) {
+    for (const [i, panel] of panels.entries()) {
+      assert.ok(Math.abs(panel.y - panels[0].y) <= 1);
+      assert.ok(Math.abs(slotBoxes[i].y - slotBoxes[0].y) <= 1);
+      if (i > 0) assert.ok(panels[i - 1].x + panels[i - 1].width < panel.x);
+      const mid = slotBoxes[i].x + slotBoxes[i].width / 2;
+      assert.ok(
+        mid > panel.x && mid < panel.x + panel.width,
+        "A physical Prestige slot heads each lane.",
+      );
+    }
+  } else {
+    for (let i = 1; i < 3; i++) {
+      assert.ok(slotBoxes[i].y >= slotBoxes[i - 1].y + slotBoxes[i - 1].height - 1);
+      assert.ok(panels[i].y >= panels[i - 1].y + panels[i - 1].height - 1);
+    }
+  }
+  if (full) {
+    const glyphs = await readGlyphs(details.locator("[data-wire-id]"));
+    assert.deepEqual(
+      glyphs,
+      boardGlyphs,
+      "Details use the tree's frame, theme and atlas tile for each active trait.",
+    );
+    assert.equal(new Set(glyphs.map((g) => g.shape)).size, 4);
+    assert.equal(new Set(glyphs.map((g) => g.tint)).size, 4);
+    assert.ok(glyphs.every((g) => g.shape !== "none" && g.lit === "true"));
+    assert.ok(glyphs.some((g) => g.image?.includes("perk-atlas-")));
   }
 }
 
@@ -793,12 +882,13 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
     }
     const firstName = slot(page, "warfighter", 1).locator(".perk-node-name");
     assert.ok(await firstName.isVisible());
-    if (width === 1440 || width === 320) await shot(page, outputDirectory, label, "tree-" + width);
+    if ([1920, 1440, 320].includes(width))
+      await shot(page, outputDirectory, label, "tree-" + width);
     const stable = await readSave();
     await checkActiveDetails(page, width, full);
     await assertNoOverflow(page);
     await page.evaluate(() => window.scrollTo(0, 0));
-    if (width === 1440 || width === 320)
+    if ([1920, 1440, 320].includes(width))
       await shot(page, outputDirectory, label, "details-" + width);
     assert.deepEqual(await readSave(), stable, "Changing tabs must not modify saved choices.");
     await showTab(page, "board");
@@ -822,6 +912,17 @@ export async function checkTraits(page, { assertNoOverflow, outputDirectory, lab
   await slot(page, "prestige", 2).click({ button: "right" });
   assert.equal(await slot(page, "prestige", 1).getAttribute("data-wire-id"), "74");
   assert.equal(await slot(page, "prestige", 3).getAttribute("data-wire-id"), "69");
+  await showTab(page, "details");
+  const sparseSlots = page.locator(".perk-active-prestige-band .perk-active-prestige");
+  assert.deepEqual(
+    await sparseSlots.evaluateAll((nodes) => nodes.map((n) => n.dataset.wireId ?? "")),
+    ["74", "", "69"],
+  );
+  assert.equal(
+    await sparseSlots.nth(1).locator(".perk-node-mark").getAttribute("data-lit"),
+    "false",
+  );
+  await showTab(page, "board");
   await share.locator("summary").click();
   const sparse = await exported.inputValue();
   await page.locator("#trait-import").fill("AQA");
