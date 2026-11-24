@@ -59,7 +59,7 @@ localStorage 底层仍同步，这一包装只统一异步调用接口。以后�
 
 ## 离线缓存
 
-`scripts/build.mjs` 调用 Vite 后，依次生成静态入口、版权文件和 PWA 清单。`scripts/prepare-pwa.mjs` 写入构建标识、Manifest、安装图标和固定地址的 `sw.js`；支持根路径和 Pages 子路径。
+`scripts/build.mjs` 调用 Vite 后，依次生成静态入口、版权文件和 PWA 清单。`scripts/prepare-pwa.mjs` 写入构建标识、Manifest、安装图标和固定地址的 `sw.js`。GitHub Pages 从独立域名的根路径提供服务，Service Worker 在 `/sw.js` 注册并覆盖整个站点。
 
 `src/pwa.ts` 使用工厂创建客户端状态，`PwaStatus` 展示离线就绪和手动更新提示。首次联网缓存完整应用和图片后，四个工具可直接离线打开。开发环境不注册。旧标签页保留其构建资源，只有点击更新的标签页刷新；用户 KV 与资源缓存相互独立。
 

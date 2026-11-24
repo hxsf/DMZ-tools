@@ -40,14 +40,16 @@ Vite 使用 Rolldown 打包、Oxc 转换与压缩；Preact 提供界面。类型
 
 工作流使用内置 `GITHUB_TOKEN`，无需额外 PAT。构建任务仅需 `contents: read`；部署任务使用 `pages: write` 和 `id-token: write`，通过 OIDC 验证部署身份。
 
-默认站点地址为 <https://hxsf.github.io/DMZ-tools/>。本地验证部署产物：
+线上站点为 <https://dmz-tool.github.hxsf.me/>。在本地运行以下命令可预览同样的部署产物。
 
 ```bash
 npm run build:pages
-npm run preview -- --base=/DMZ-tools/
+npm run preview
 ```
 
-构建使用 `/DMZ-tools/` 作为资源和路由前缀，为各工具生成独立的静态入口，直接访问或刷新子页面也能打开。产物包含 `.nojekyll`、`404.html`、项目许可与游戏图片版权声明，不包含源码、开发文档或个人存档。普通 `npm run dev` / `npm run build` 保持根路径。
+资源、工具路由与 Service Worker 的作用域均从独立域名的根路径 `/` 开始。各工具都有独立的静态入口，直接访问或刷新子页面也能打开。产物包含 `.nojekyll`、`404.html`、项目许可与游戏图片版权声明。
+
+浏览器按来源保存数据，切换到新域名后，旧站的解锁记录、需求清单和特性树不会自动迁移。若仍可打开旧站，可先导出特性树短码，再到新站导入。首次联网打开新站时会重新建立离线缓存。
 
 GitHub 规则参考：[使用自定义 Actions 工作流发布 Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow)。
 

@@ -65,7 +65,7 @@
 
 - GitHub Actions 在推送 `main` 或从 `main` 手动运行时直接部署 Pages。`build` 任务构建 `dist/` 并通过 `actions/upload-pages-artifact` 上传，`deploy` 任务使用 `actions/deploy-pages` 发布到 `github-pages` 环境；不使用 `pages` 分支。
 - 用户在 Settings → Pages → Source 选择 `GitHub Actions`；工作流不自动修改仓库设置。使用内置 `GITHUB_TOKEN`，无需额外 PAT；构建仅需 `contents: read`，部署使用 `pages: write` 与 `id-token: write`。
-- `npm run build:pages` 使用 `/DMZ-tools/` 前缀；应用路由和链接统一使用 `appPath()`。构建后生成各工具的静态入口、`404.html`、`.nojekyll` 并携带版权声明。普通本地构建仍使用根路径。
+- `npm run build:pages` 构建部署在独立域名根路径的站点。应用路由和链接统一使用 `appPath()`。构建后生成各工具的静态入口、`404.html`、`.nojekyll` 并携带版权声明。生产地址为 <https://dmz-tool.github.hxsf.me/>。
 
 ## 客户端缓存
 

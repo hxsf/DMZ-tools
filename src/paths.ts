@@ -1,4 +1,4 @@
-/** 与 Vite 资源路径共用部署前缀；本地为 /，Pages 为 /DMZ-tools/。 */
+/** 应用路由与静态资源共用 Vite 的部署路径。 */
 export function appPath(path: string): string {
   return `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
 }
